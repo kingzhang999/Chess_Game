@@ -11,16 +11,17 @@ public abstract class AbstractChessPiece {
     protected ImageIcon chess_block_iconImage;//记录方块所在格子在棋子来之前的贴图。在棋子离开后方便复原方块
     protected MoveBehavior moveBehavior;
     protected AttackBehavior attackBehavior;
-    protected JButton[] chessBlockList_canWalk;
+    protected ChoiceState choiceState;
 
     public AbstractChessPiece(JButton chess_blocks,ImageIcon chess_piece){
         chess_block = chess_blocks;
         this.chess_piece = chess_piece;
         chess_block_iconImage = (ImageIcon) chess_block.getIcon();
+        choiceState = ChoiceState.UN_CHOICE;
         //我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转
     }
-    public void move(){
-        moveBehavior.move();
+    public void move(JButton target_chess_block){
+        moveBehavior.move(target_chess_block);
     }
     public void attack(){
         attackBehavior.attack();
@@ -55,5 +56,17 @@ public abstract class AbstractChessPiece {
 
     public ImageIcon getChess_block_iconImage() {
         return this.chess_block_iconImage;
+    }
+
+    public ChoiceState getChoiceState() {
+        return choiceState;
+    }
+
+    public void setChoiceState(ChoiceState choiceState) {
+        this.choiceState = choiceState;
+    }
+
+    public enum ChoiceState{
+        CHOICE_ABLE,UN_CHOICE
     }
 }

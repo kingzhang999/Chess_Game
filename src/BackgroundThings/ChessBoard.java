@@ -2,6 +2,7 @@ package BackgroundThings;
 
 import Chesspieces.AbstractChessPiece;
 import Chesspieces.Soldier;
+import Players.WhitePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,12 +22,12 @@ public class ChessBoard extends JPanel {
     public static ChessBoard chessBoard = new ChessBoard();
 
     public static JButton[][] board;
-    public static AbstractChessPiece[] chess_piece_list;
+    public static AbstractChessPiece[] all_chess_piece_list;
 
     public ChessBoard() {
         setLayout(new GridLayout(COLS,ROWS));
         board = new JButton[ROWS][COLS];
-        chess_piece_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
+        all_chess_piece_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
         initializeBoard();
     }
 
@@ -99,7 +100,7 @@ public class ChessBoard extends JPanel {
         switch (pieceType){
             case Soldier -> {
                 Soldier soldier = new Soldier(chess_block,chess_piece);
-                chess_piece_list[chess_piece_list_top] = soldier;//将创建好的棋子放入数组中统一管理
+                all_chess_piece_list[chess_piece_list_top] = soldier;//将创建好的棋子放入数组中统一管理
                 chess_piece_list_top += 1;
                 return soldier;
             }
@@ -114,13 +115,21 @@ public class ChessBoard extends JPanel {
                 if (hasPieces){//检查当前格子是否有棋子。
                     //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
                     AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
-                    thePieceOnTrigger.move();//test
+                    thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
+                    WhitePlayer.w_readyToMove.push(thePieceOnTrigger);
+                    //thePieceOnTrigger.move();//test
+                } else if (!WhitePlayer.w_readyToMove.isEmpty()) {
+                    AbstractChessPiece abstractChessPiece = WhitePlayer.w_readyToMove.pop();
+                    abstractChessPiece.move(trigger);
+                    if (abstractChessPiece instanceof Soldier){
+                        ((Soldier) abstractChessPiece).setFirstMove(false);
+                    }
                 }
             }
             //System.out.println("This is a test.");
         }
         private AbstractChessPiece findChessPiece(JButton trigger){
-            for (AbstractChessPiece chessPiece : chess_piece_list){
+            for (AbstractChessPiece chessPiece : all_chess_piece_list){
                 if (trigger == chessPiece.getChess_block()){
                     //System.out.println("chessPiece: "+chessPiece);//test
                     //System.out.println("I have piece.");//test
