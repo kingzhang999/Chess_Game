@@ -17,11 +17,11 @@ public abstract class AbstractChessPiece {
         chess_block = chess_blocks;
         this.chess_piece = chess_piece;
         chess_block_iconImage = (ImageIcon) chess_block.getIcon();
-        choiceState = ChoiceState.UN_CHOICE;
+        choiceState = ChoiceState.UN_CHOICE;//初始化为未选中状态
         //我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转
     }
-    public void move(JButton target_chess_block){
-        moveBehavior.move(target_chess_block);
+    public boolean move(JButton target_chess_block){
+        return moveBehavior.move(target_chess_block);
     }
     public void attack(){
         attackBehavior.attack();

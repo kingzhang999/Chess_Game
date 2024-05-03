@@ -1,7 +1,10 @@
 package Behaviors;
 
 import BackgroundThings.ChessBoard;
+import Chesspieces.AbstractChessPiece;
 import Chesspieces.Soldier;
+import Players.WhitePlayer;
+import Players.BlackPlayer;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -18,15 +21,17 @@ public class SoldiersMovement implements MoveBehavior{
         nowPosition = abstractChessPiece.getChess_block();
         x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
         y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
-        chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
+        //初始化棋子可以移动的格子列表。
         chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
     }
     @Override
-    public void move(JButton target_chess_block) {
+    public boolean move(JButton target_chess_block) {
         int distance = ChessBoard.findElement(ChessBoard.board,target_chess_block)[0] - x;
         //每次执行移动操作的时候，都需要重新判断可以移动的格子，以防上一次遇到不可移动的格子之后，将棋子卡在原地无法行动。
+        chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
         chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
-        if (abstractChessPiece.getFirstMove() && distance <= 2){
+        if (abstractChessPiece.getFirstMove() && distance <= 2 && abstractChessPiece.getChoiceState()
+                == AbstractChessPiece.ChoiceState.CHOICE_ABLE){
             if(x+distance < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
                     chessBlockList_moment.contains(ChessBoard.getChessBoardElement(x+distance,y))){
 
@@ -42,9 +47,21 @@ public class SoldiersMovement implements MoveBehavior{
                 abstractChessPiece.setChess_block(target_chess_block);
 
                 if(targetImageIcon == ChessBoard.WHITE){//如要去的格子是白格子，则把要去的格子的背景换成相应棋子在白格子下的背景。
-                    ChessBoard.changeChessBoard(x+distance,y,ChessBoard.WHITE_SOLDIER_W);
+
+                    if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+distance,y,ChessBoard.WHITE_SOLDIER_W);
+                    }else if(BlackPlayer.isInBlackPieceList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+distance,y,ChessBoard.BLACK_SOLDIER_W);
+                    }
+
                 }else {//不然则把要去的格子的背景换成相应棋子在黑格子下的背景。
-                    ChessBoard.changeChessBoard(x+distance,y,ChessBoard.WHITE_SOLDIER_B);
+
+                    if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+distance,y,ChessBoard.WHITE_SOLDIER_B);
+                    }else if(BlackPlayer.isInBlackPieceList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+distance,y,ChessBoard.BLACK_SOLDIER_B);
+                    }
+
                 }
                 ChessBoard.getChessBoardElement(x+distance,y).repaint();//重绘移动完后格子的贴图。
                 //实时获取现在所处在的格子和位置。
@@ -54,8 +71,11 @@ public class SoldiersMovement implements MoveBehavior{
                 chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
                 chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
 
+                return true;//移动成功。
             }
-        }else if(chessBlockList_moment.contains(target_chess_block)) {
+            return false;//移动失败。
+        }else if(chessBlockList_moment.contains(target_chess_block) && abstractChessPiece.getChoiceState()
+                == AbstractChessPiece.ChoiceState.CHOICE_ABLE) {
             if(x+1 < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
                     chessBlockList_moment.contains(ChessBoard.getChessBoardElement(x+1,y))){
 
@@ -71,9 +91,21 @@ public class SoldiersMovement implements MoveBehavior{
                 abstractChessPiece.setChess_block(ChessBoard.getChessBoardElement(x+1,y));
 
                 if(targetImageIcon == ChessBoard.WHITE){//如要去的格子是白格子，则把要去的格子的背景换成相应棋子在白格子下的背景。
-                    ChessBoard.changeChessBoard(x+1,y,ChessBoard.WHITE_SOLDIER_W);
+
+                    if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+1,y,ChessBoard.WHITE_SOLDIER_W);
+                    }else if(BlackPlayer.isInBlackPieceList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+1,y,ChessBoard.BLACK_SOLDIER_W);
+                    }
+
                 }else {//不然则把要去的格子的背景换成相应棋子在黑格子下的背景。
-                    ChessBoard.changeChessBoard(x+1,y,ChessBoard.WHITE_SOLDIER_B);
+
+                    if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+1,y,ChessBoard.WHITE_SOLDIER_B);
+                    }else if(BlackPlayer.isInBlackPieceList(abstractChessPiece)){
+                        ChessBoard.changeChessBoard(x+1,y,ChessBoard.BLACK_SOLDIER_B);
+                    }
+
                 }
                 ChessBoard.getChessBoardElement(x+1,y).repaint();//重绘移动完后格子的贴图。
                 //实时获取现在所处在的格子和位置。
@@ -83,21 +115,24 @@ public class SoldiersMovement implements MoveBehavior{
                 chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
                 chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
 
+                return true;//移动成功。
             }
+            return false;//移动失败。
         }
+        return false;//移动失败。
     }
 
     @Override
     public JButton[] scanChessBlock_canWalk() {
         ArrayList<JButton> chessBlockList_moments = new ArrayList<>();
-        int x_copy = x;
+        int x_copy = x;//复制x的值，以防止在循环中修改原值。
         for (;x_copy + 1 <ChessBoard.ROWS;x_copy++){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy加一以检查下一个格子。
             if (!ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y])){
                 chessBlockList_moments.add(ChessBoard.board[x_copy+1][y]);
             }
         }
 
-        JButton[] chessBlockList_official = new JButton[chessBlockList_moments.size()];
+        JButton[] chessBlockList_official = new JButton[chessBlockList_moments.size()];//将ArrayList转换为JButton数组。
         chessBlockList_official = chessBlockList_moments.toArray(chessBlockList_official);
 
         return chessBlockList_official;
