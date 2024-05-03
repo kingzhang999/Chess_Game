@@ -140,77 +140,83 @@ public class ChessBoard extends JPanel {
             if (e.getSource() instanceof JButton trigger) {
                 boolean hasPieces = hasPiece(trigger);
                 if (getGameTurn() == GameTurn.WHITE_TURN) {
-                    System.out.println("white turn");
-                    if (hasPieces && WhitePlayer.w_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
-
-                        //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
-                        AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
-
-                        //如果发现此时被选中的棋子不是白棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
-                        if (findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
-                            //将棋子设为已选择状态。
-                            thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
-                            WhitePlayer.add_W_ReadyToMove(thePieceOnTrigger);
-
-                            //thePieceOnTrigger.move();//test
-                        }
-
-                    } else if (!WhitePlayer.w_readyToMove.isEmpty()) {
-
-                        AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
-                        boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
-                        //移动完后将棋子恢复至未被选择状态。
-                        abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
-
-                        if (isSuccess) {
-                            //移动成功后才将Solder的isFirstMove设为false。
-                            if(abstractChessPiece instanceof Soldier){
-                                ((Soldier) abstractChessPiece).setFirstMove(false);
-                            }//如果移动成功，则判断当前轮到谁走
-                            if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
-                                setGameTurn(GameTurn.BLACK_TURN);
-                            }else{
-                                setGameTurn(GameTurn.WHITE_TURN);
-                            }
-                        }
-                    }
+                    whitePlayerMove(hasPieces, trigger);
                 }else if (getGameTurn() == GameTurn.BLACK_TURN) {
-                    System.out.println("Black turn");
-                    if (hasPieces && BlackPlayer.b_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
-
-                        //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
-                        AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
-                        //如果发现此时被选中的棋子不是黑棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
-                        if(!findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
-                            //将棋子设为已选择状态。
-                            thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
-                            BlackPlayer.add_B_ReadyToMove(thePieceOnTrigger);
-
-                            //thePieceOnTrigger.move();//test
-                        }
-
-                    } else if (!BlackPlayer.b_readyToMove.isEmpty()) {
-
-                        AbstractChessPiece abstractChessPiece = BlackPlayer.getNext_B_ReadyToMove();
-                        boolean isSuccess = abstractChessPiece.move(trigger);
-                        //移动完后将棋子恢复至未被选择状态。
-                        abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
-
-                        if (isSuccess) {
-                            //移动成功后才将Solder的isFirstMove设为false。
-                            if(abstractChessPiece instanceof Soldier){
-                                ((Soldier) abstractChessPiece).setFirstMove(false);
-                            }
-                            //如果移动成功，则判断当前轮到谁走
-                            if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
-                                setGameTurn(GameTurn.BLACK_TURN);
-                            }else{
-                                setGameTurn(GameTurn.WHITE_TURN);
-                            }
-                        }
-                    }
+                    blackPlayerMove(hasPieces, trigger);
                 }
                 //System.out.println("This is a test.");
+            }
+        }
+        private void whitePlayerMove(boolean hasPieces, JButton trigger) {
+            System.out.println("white turn");
+            if (hasPieces && WhitePlayer.w_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
+
+                //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
+                AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
+
+                //如果发现此时被选中的棋子不是白棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
+                if (findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
+                    //将棋子设为已选择状态。
+                    thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
+                    WhitePlayer.add_W_ReadyToMove(thePieceOnTrigger);
+
+                    //thePieceOnTrigger.move();//test
+                }
+
+            } else if (!WhitePlayer.w_readyToMove.isEmpty()) {
+
+                AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
+                boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
+                //移动完后将棋子恢复至未被选择状态。
+                abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
+
+                if (isSuccess) {
+                    //移动成功后才将Solder的isFirstMove设为false。
+                    if(abstractChessPiece instanceof Soldier){
+                        ((Soldier) abstractChessPiece).setFirstMove(false);
+                    }//如果移动成功，则判断当前轮到谁走
+                    if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
+                        setGameTurn(GameTurn.BLACK_TURN);
+                    }else{
+                        setGameTurn(GameTurn.WHITE_TURN);
+                    }
+                }
+            }
+        }
+        private void blackPlayerMove(boolean hasPieces, JButton trigger) {
+            System.out.println("Black turn");
+            if (hasPieces && BlackPlayer.b_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
+
+                //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
+                AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
+                //如果发现此时被选中的棋子不是黑棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
+                if(!findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
+                    //将棋子设为已选择状态。
+                    thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
+                    BlackPlayer.add_B_ReadyToMove(thePieceOnTrigger);
+
+                    //thePieceOnTrigger.move();//test
+                }
+
+            } else if (!BlackPlayer.b_readyToMove.isEmpty()) {
+
+                AbstractChessPiece abstractChessPiece = BlackPlayer.getNext_B_ReadyToMove();
+                boolean isSuccess = abstractChessPiece.move(trigger);
+                //移动完后将棋子恢复至未被选择状态。
+                abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
+
+                if (isSuccess) {
+                    //移动成功后才将Solder的isFirstMove设为false。
+                    if(abstractChessPiece instanceof Soldier){
+                        ((Soldier) abstractChessPiece).setFirstMove(false);
+                    }
+                    //如果移动成功，则判断当前轮到谁走
+                    if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
+                        setGameTurn(GameTurn.BLACK_TURN);
+                    }else{
+                        setGameTurn(GameTurn.WHITE_TURN);
+                    }
+                }
             }
         }
 
