@@ -18,11 +18,7 @@ public class SoldiersMovement implements MoveBehavior{
     Soldier abstractChessPiece;
     public SoldiersMovement(Soldier chessPiece){
         abstractChessPiece = chessPiece;
-        nowPosition = abstractChessPiece.getChess_block();
-        x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
-        y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
-        //初始化棋子可以移动的格子列表。
-        chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
+        updateLocation();//初始化时，实时获取现在所处在的格子和位置。
     }
     @Override
     public boolean move(JButton target_chess_block) {
@@ -64,12 +60,7 @@ public class SoldiersMovement implements MoveBehavior{
 
                 }
                 ChessBoard.getChessBoardElement(x+distance,y).repaint();//重绘移动完后格子的贴图。
-                //实时获取现在所处在的格子和位置。
-                nowPosition = abstractChessPiece.getChess_block();
-                x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
-                y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
-                chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
-                chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
+                updateLocation();//实时获取现在所处在的格子和位置。
 
                 return true;//移动成功。
             }
@@ -108,13 +99,7 @@ public class SoldiersMovement implements MoveBehavior{
 
                 }
                 ChessBoard.getChessBoardElement(x+1,y).repaint();//重绘移动完后格子的贴图。
-                //实时获取现在所处在的格子和位置。
-                nowPosition = abstractChessPiece.getChess_block();
-                x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
-                y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
-                chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
-                chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
-
+                updateLocation();//实时获取现在所处在的格子和位置。
                 return true;//移动成功。
             }
             return false;//移动失败。
@@ -136,5 +121,13 @@ public class SoldiersMovement implements MoveBehavior{
         chessBlockList_official = chessBlockList_moments.toArray(chessBlockList_official);
 
         return chessBlockList_official;
+    }
+    private void updateLocation(){
+        //实时获取现在所处在的格子和位置。
+        nowPosition = abstractChessPiece.getChess_block();
+        x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
+        y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
+        chessBlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
+        chessBlockList_moment.addAll(List.of(scanChessBlock_canWalk()));
     }
 }

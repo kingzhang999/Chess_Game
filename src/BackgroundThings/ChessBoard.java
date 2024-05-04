@@ -56,7 +56,7 @@ public class ChessBoard extends JPanel {
         }
         Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][1],WHITE_SOLDIER_B);//test
         //firstSoldier.move();
-        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[3][1],BLACK_SOLDIER_W);//test
+        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][1],BLACK_SOLDIER_W);//test
     }
 
     private JButton chessBlockMaker(ImageIcon color) {
