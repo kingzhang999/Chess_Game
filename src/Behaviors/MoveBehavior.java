@@ -4,5 +4,6 @@ import javax.swing.*;
 
 public interface MoveBehavior {
     boolean move(JButton chess_block);
-    JButton[] scanChessBlock_canWalk();
+    JButton[] scan_W_ChessBlock_canWalk();
+    JButton[] scan_B_ChessBlock_canWalk();
 }

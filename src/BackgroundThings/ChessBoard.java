@@ -56,7 +56,7 @@ public class ChessBoard extends JPanel {
         }
         Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][1],WHITE_SOLDIER_B);//test
         //firstSoldier.move();
-        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][1],BLACK_SOLDIER_W);//test
+        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[6][2],BLACK_SOLDIER_B);//test
     }
 
     private JButton chessBlockMaker(ImageIcon color) {
@@ -81,6 +81,18 @@ public class ChessBoard extends JPanel {
             }
         }
         //System.out.println("元素 " + target + " 不在数组中");/test
+        throw new RuntimeException("元素 " + target + " 不在数组中");
+    }
+    public static int[] findElement_test(JButton[][] array, JButton target,String message) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] == target) {
+                    System.out.println(message+"元素 " + target + " 在第 " + (i+1) + " 行，第 " + (j+1) + " 列");//test
+                    return new int[]{i,j};
+                }
+            }
+        }
+        System.out.println("元素 " + target + " 不在数组中");//test
         throw new RuntimeException("元素 " + target + " 不在数组中");
     }
     public static void setGameTurn(GameTurn gameTurn){
@@ -223,9 +235,11 @@ public class ChessBoard extends JPanel {
         private AbstractChessPiece findChessPiece(JButton trigger) {
 
             for (AbstractChessPiece chessPiece : all_chess_piece_list) {
-                System.out.println("ChessPiece: "+chessPiece);
-                if (trigger == chessPiece.getChess_block()) {
-                    return chessPiece;//找到对应棋子后退出循环。
+                //System.out.println("ChessPiece: "+chessPiece);//test
+                if(chessPiece != null){//防止数组中有空元素。
+                    if (trigger == chessPiece.getChess_block()) {
+                        return chessPiece;//找到对应棋子后退出循环。
+                    }
                 }
             }
             throw new IllegalArgumentException("This trigger don't have piece.");
@@ -234,14 +248,14 @@ public class ChessBoard extends JPanel {
         private boolean findPiecesInBlackListOrWhiteList(AbstractChessPiece thePiece) {
 
             for (AbstractChessPiece chessPiece : WhitePlayer.white_pieces_list) {
-                System.out.println("W_ChessPiece: "+chessPiece);
+                //System.out.println("W_ChessPiece: "+chessPiece);//test
                 if (chessPiece == thePiece) {
                     return true;//找到对应棋子后退出循环。
                 }
             }
 
             for (AbstractChessPiece chessPiece : BlackPlayer.black_pieces_list) {
-                System.out.println("B_ChessPiece: "+chessPiece);
+                //System.out.println("B_ChessPiece: "+chessPiece);//test
                 if (chessPiece == thePiece) {
                     return false;//找到对应棋子后退出循环。
                 }
