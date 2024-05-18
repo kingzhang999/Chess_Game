@@ -36,7 +36,6 @@ public class SoldiersMovement implements MoveBehavior{
             if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
                 return real_W_move(target_chess_block,distance);
             }else if(BlackPlayer.isInBlackPieceList(abstractChessPiece)){
-                System.out.println("black move");
                 return real_B_move(target_chess_block,distance);
             }
         }else if(distance <= 1 && abstractChessPiece.getChoiceState()
@@ -83,7 +82,8 @@ public class SoldiersMovement implements MoveBehavior{
     }
     private boolean real_W_move(JButton target_chess_block,int distance){
         if(x+distance < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
-                chess_W_BlockList_moment.contains(ChessBoard.getChessBoardElement(x+distance,y))){
+                chess_W_BlockList_moment.contains(ChessBoard.getChessBoardElement(x+distance,y))
+        && chess_W_BlockList_moment.contains(target_chess_block)){
 
             //获取当前所处方块此时的贴图。
             ImageIcon nowIcon = (ImageIcon) nowPosition.getIcon();//我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转
@@ -116,7 +116,8 @@ public class SoldiersMovement implements MoveBehavior{
     private boolean real_B_move(JButton target_chess_block,int distance){
         //System.out.println("Is black move: "+ChessBoard.getChessBoardElement(x-distance,y));//test
         if(x-distance >= 0 &&//防止棋子出界并判断下一个格子是否可以移动。
-                chess_B_BlockList_moment.contains(ChessBoard.getChessBoardElement(x-distance,y))){
+                chess_B_BlockList_moment.contains(ChessBoard.getChessBoardElement(x-distance,y))
+                && chess_B_BlockList_moment.contains(target_chess_block)){
 
             //获取当前所处方块此时的贴图。
             ImageIcon nowIcon = (ImageIcon) nowPosition.getIcon();//我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转

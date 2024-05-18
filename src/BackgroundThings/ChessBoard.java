@@ -122,6 +122,13 @@ public class ChessBoard extends JPanel {
             return false;
         }
     }
+    private void changeSide(){
+        if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
+            setGameTurn(GameTurn.BLACK_TURN);
+        }else{
+            setGameTurn(GameTurn.WHITE_TURN);
+        }
+    }
     public static AbstractChessPiece createChessPiece(PieceType pieceType,JButton chess_block,
                                                       ImageIcon chess_piece){
         switch (pieceType){
@@ -168,6 +175,7 @@ public class ChessBoard extends JPanel {
 
                 //如果发现此时被选中的棋子不是白棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
                 if (findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
+                    //System.out.println("This piece is white piece.");//test
                     //将棋子设为已选择状态。
                     thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
                     WhitePlayer.add_W_ReadyToMove(thePieceOnTrigger);
@@ -175,23 +183,19 @@ public class ChessBoard extends JPanel {
                     //thePieceOnTrigger.move();//test
                 }
 
-            } else if (!WhitePlayer.w_readyToMove.isEmpty()) {
+            } else if (!WhitePlayer.w_readyToMove.isEmpty() && !hasPieces) {
 
                 AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
                 boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
-                //移动完后将棋子恢复至未被选择状态。
-                abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
 
                 if (isSuccess) {
+                    //移动完后将棋子恢复至未被选择状态。
+                    abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
                     //移动成功后才将Solder的isFirstMove设为false。
                     if(abstractChessPiece instanceof Soldier){
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果移动成功，则判断当前轮到谁走
-                    if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
-                        setGameTurn(GameTurn.BLACK_TURN);
-                    }else{
-                        setGameTurn(GameTurn.WHITE_TURN);
-                    }
+                    changeSide();
                 }
             }
         }
@@ -210,24 +214,20 @@ public class ChessBoard extends JPanel {
                     //thePieceOnTrigger.move();//test
                 }
 
-            } else if (!BlackPlayer.b_readyToMove.isEmpty()) {
+            } else if (!BlackPlayer.b_readyToMove.isEmpty() && !hasPieces) {
 
                 AbstractChessPiece abstractChessPiece = BlackPlayer.getNext_B_ReadyToMove();
                 boolean isSuccess = abstractChessPiece.move(trigger);
-                //移动完后将棋子恢复至未被选择状态。
-                abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
 
                 if (isSuccess) {
+                    //移动完后将棋子恢复至未被选择状态。
+                    abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
                     //移动成功后才将Solder的isFirstMove设为false。
                     if(abstractChessPiece instanceof Soldier){
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }
                     //如果移动成功，则判断当前轮到谁走
-                    if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
-                        setGameTurn(GameTurn.BLACK_TURN);
-                    }else{
-                        setGameTurn(GameTurn.WHITE_TURN);
-                    }
+                    changeSide();
                 }
             }
         }
