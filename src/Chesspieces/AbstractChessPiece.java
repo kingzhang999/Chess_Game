@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public abstract class AbstractChessPiece {
     protected JButton chess_block;//保存棋子目前所在的格子
-    protected ImageIcon chess_piece;
+    protected ImageIcon chess_piece;//保存棋子的图片
     protected ImageIcon chess_block_iconImage;//记录方块所在格子在棋子来之前的贴图。在棋子离开后方便复原方块
     protected MoveBehavior moveBehavior;
     protected AttackBehavior attackBehavior;

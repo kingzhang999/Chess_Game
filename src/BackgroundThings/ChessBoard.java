@@ -22,13 +22,13 @@ public class ChessBoard extends JPanel {
     public static final ImageIcon WHITE_SOLDIER_B = new ImageIcon("resource/white_soldier_in_black.jpg");
     public static final ImageIcon BLACK_SOLDIER_W = new ImageIcon("resource/black_soldier_in_white.jpg");
     public static final ImageIcon BLACK_SOLDIER_B = new ImageIcon("resource/black_soldier_in_black.jpg");
-    public static ChessBoard chessBoard = new ChessBoard();
+    public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
 
     public static JButton[][] board;
     public static AbstractChessPiece[] all_chess_piece_list;
 
-    public ChessBoard() {
+    private ChessBoard() {
         setLayout(new GridLayout(COLS,ROWS));
         board = new JButton[ROWS][COLS];
         all_chess_piece_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
@@ -59,6 +59,17 @@ public class ChessBoard extends JPanel {
         Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[6][2],BLACK_SOLDIER_B);//test
     }
 
+    public static ChessBoard getChessBoard(){
+        if(chessBoard == null){
+            synchronized (ChessBoard.class){
+                if(chessBoard == null){
+                    chessBoard = new ChessBoard();
+                }
+            }
+        }
+        return chessBoard;
+    }
+
     private JButton chessBlockMaker(ImageIcon color) {
         if(color == WHITE){
             JButton button = new JButton(WHITE);
@@ -71,6 +82,7 @@ public class ChessBoard extends JPanel {
         }
         throw new IllegalArgumentException("Error Color!");
     }
+
     public static int[] findElement(JButton[][] array, JButton target) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
@@ -83,6 +95,7 @@ public class ChessBoard extends JPanel {
         //System.out.println("元素 " + target + " 不在数组中");/test
         throw new RuntimeException("元素 " + target + " 不在数组中");
     }
+
     public static int[] findElement_test(JButton[][] array, JButton target,String message) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
@@ -95,9 +108,11 @@ public class ChessBoard extends JPanel {
         System.out.println("元素 " + target + " 不在数组中");//test
         throw new RuntimeException("元素 " + target + " 不在数组中");
     }
+
     public static void setGameTurn(GameTurn gameTurn){
         ChessBoard.gameTurn = gameTurn;
     }
+
     public static GameTurn getGameTurn(){
         return gameTurn;
     }
@@ -105,9 +120,11 @@ public class ChessBoard extends JPanel {
     public static void changeChessBoard(int x,int y,ImageIcon things){
         board[x][y].setIcon(things);
     }
+
     public static JButton getChessBoardElement(int x, int y){
         return board[x][y];
     }
+
     public static boolean hasPiece(JButton testObject){//检测棋格上是否有棋子。
         if((ImageIcon)testObject.getIcon() == WHITE_SOLDIER_W){
             return true;
@@ -122,6 +139,7 @@ public class ChessBoard extends JPanel {
             return false;
         }
     }
+
     private void changeSide(){
         if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
             setGameTurn(GameTurn.BLACK_TURN);
@@ -129,21 +147,24 @@ public class ChessBoard extends JPanel {
             setGameTurn(GameTurn.WHITE_TURN);
         }
     }
-    public static AbstractChessPiece createChessPiece(PieceType pieceType,JButton chess_block,
+    private void addChessPiece(AbstractChessPiece chessPiece){
+        all_chess_piece_list[chess_piece_list_top] = chessPiece;
+        chess_piece_list_top += 1;
+    }
+
+    public AbstractChessPiece createChessPiece(PieceType pieceType,JButton chess_block,
                                                       ImageIcon chess_piece){
         switch (pieceType){
             case Soldier -> {
                 if (chess_piece == WHITE_SOLDIER_W || chess_piece == WHITE_SOLDIER_B){
                     Soldier soldier = new Soldier(chess_block,chess_piece);
-                    all_chess_piece_list[chess_piece_list_top] = soldier;//将创建好的棋子放入数组中统一管理
-                    chess_piece_list_top += 1;
+                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
                     WhitePlayer.add_W_Piece(soldier);
                     return soldier;
                 }else if (chess_piece == BLACK_SOLDIER_W || chess_piece == BLACK_SOLDIER_B){
                     Soldier soldier = new Soldier(chess_block,chess_piece);
-                    all_chess_piece_list[chess_piece_list_top] = soldier;//将创建好的棋子放入数组中统一管理
-                    chess_piece_list_top += 1;
+                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(soldier);
                     return soldier;
@@ -153,6 +174,7 @@ public class ChessBoard extends JPanel {
         }
         throw new IllegalArgumentException("NO SUCH TYPE PIECE");
     }
+
     class ClickButtonEvent implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -166,6 +188,7 @@ public class ChessBoard extends JPanel {
                 //System.out.println("This is a test.");
             }
         }
+
         private void whitePlayerMove(boolean hasPieces, JButton trigger) {
             System.out.println("white turn");
             if (hasPieces && WhitePlayer.w_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
@@ -199,6 +222,7 @@ public class ChessBoard extends JPanel {
                 }
             }
         }
+
         private void blackPlayerMove(boolean hasPieces, JButton trigger) {
             System.out.println("Black turn");
             if (hasPieces && BlackPlayer.b_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。

@@ -16,7 +16,7 @@ public class GameScreen extends JFrame{
         setVisible(true);
     }
     private void initializeScreen(){
-        getContentPane().add(ChessBoard.chessBoard,BorderLayout.CENTER);
+        getContentPane().add(ChessBoard.getChessBoard(),BorderLayout.CENTER);
     }
     public static void main(String[] args) {
         new GameScreen();

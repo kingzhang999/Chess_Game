@@ -27,6 +27,7 @@ public class SoldiersMovement implements MoveBehavior{
         if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
             distance = ChessBoard.findElement(ChessBoard.board,target_chess_block)[0] - x;
         }else{
+            //因为黑子的走法是反着的，所以要取反保证distance是正数。
             distance = -(ChessBoard.findElement(ChessBoard.board,target_chess_block)[0] - x);
         }
 
