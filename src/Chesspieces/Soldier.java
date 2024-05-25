@@ -1,5 +1,6 @@
 package Chesspieces;
 
+import Behaviors.SoldiersAttackBehaviors;
 import Behaviors.SoldiersMovement;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ public class Soldier extends AbstractChessPiece{
         super(chess_block, chess_piece);
         chess_block.setIcon(chess_piece);
         setMoveBehavior(new SoldiersMovement(this));
+        setAttackBehavior(new SoldiersAttackBehaviors(this));
     }
 
     public void setFirstMove(boolean firstMove) {

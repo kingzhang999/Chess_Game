@@ -1,7 +1,9 @@
 package BackgroundThings;
 
 import Chesspieces.AbstractChessPiece;
+import Chesspieces.BlackPiece;
 import Chesspieces.Soldier;
+import Chesspieces.WhitePiece;
 import Players.BlackPlayer;
 import Players.WhitePlayer;
 
@@ -18,10 +20,10 @@ public class ChessBoard extends JPanel {
     private static int chess_piece_list_top = 0;
     public static final ImageIcon WHITE = new ImageIcon("resource/white.jpg");
     public static final ImageIcon BLACK = new ImageIcon("resource/black.jpg");
-    public static final ImageIcon WHITE_SOLDIER_W = new ImageIcon("resource/white_soldier_in_white.jpg");
-    public static final ImageIcon WHITE_SOLDIER_B = new ImageIcon("resource/white_soldier_in_black.jpg");
-    public static final ImageIcon BLACK_SOLDIER_W = new ImageIcon("resource/black_soldier_in_white.jpg");
-    public static final ImageIcon BLACK_SOLDIER_B = new ImageIcon("resource/black_soldier_in_black.jpg");
+    public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg");
+    public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg");
+    public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg");
+    public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg");
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
 
@@ -56,7 +58,8 @@ public class ChessBoard extends JPanel {
         }
         Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][1],WHITE_SOLDIER_B);//test
         //firstSoldier.move();
-        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[6][2],BLACK_SOLDIER_B);//test
+        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][2],BLACK_SOLDIER_B);//test
+        Soldier thirdSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][0],WHITE_SOLDIER_B);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -126,19 +129,17 @@ public class ChessBoard extends JPanel {
     }
 
     public static boolean hasPiece(JButton testObject){//检测棋格上是否有棋子。
-        if((ImageIcon)testObject.getIcon() == WHITE_SOLDIER_W){
+        if((ImageIcon)testObject.getIcon() instanceof WhitePiece || (ImageIcon)testObject.getIcon() instanceof BlackPiece){
             return true;
-        } else if ((ImageIcon)testObject.getIcon() == WHITE_SOLDIER_B) {
-            return true;
-        }else if ((ImageIcon)testObject.getIcon() == BLACK_SOLDIER_W) {
-            return true;
-        }else if ((ImageIcon)testObject.getIcon() == BLACK_SOLDIER_B) {
-            return true;
-        }
-        else {
+        }else {
             return false;
         }
     }
+    /* if((ImageIcon)testObject.getIcon() instanceof WhitePiece || (ImageIcon)testObject.getIcon() instanceof BlackPiece){
+            return true;
+        }else {
+            return false;
+        }*/
 
     private void changeSide(){
         if(getGameTurn() == ChessBoard.GameTurn.WHITE_TURN){
@@ -156,13 +157,13 @@ public class ChessBoard extends JPanel {
                                                       ImageIcon chess_piece){
         switch (pieceType){
             case Soldier -> {
-                if (chess_piece == WHITE_SOLDIER_W || chess_piece == WHITE_SOLDIER_B){
+                if (chess_piece instanceof WhitePiece){
                     Soldier soldier = new Soldier(chess_block,chess_piece);
                     addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
                     WhitePlayer.add_W_Piece(soldier);
                     return soldier;
-                }else if (chess_piece == BLACK_SOLDIER_W || chess_piece == BLACK_SOLDIER_B){
+                }else if (chess_piece instanceof BlackPiece){
                     Soldier soldier = new Soldier(chess_block,chess_piece);
                     addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
@@ -180,6 +181,9 @@ public class ChessBoard extends JPanel {
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() instanceof JButton trigger) {
                 boolean hasPieces = hasPiece(trigger);
+
+                //System.out.println("hasPieces: "+hasPieces);//test
+
                 if (getGameTurn() == GameTurn.WHITE_TURN) {
                     whitePlayerMove(hasPieces, trigger);
                 }else if (getGameTurn() == GameTurn.BLACK_TURN) {
@@ -210,6 +214,8 @@ public class ChessBoard extends JPanel {
 
                 AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
                 boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
+
+                //System.out.println("isSuccess: "+isSuccess);//test
 
                 if (isSuccess) {
                     //移动完后将棋子恢复至未被选择状态。

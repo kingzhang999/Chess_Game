@@ -9,7 +9,9 @@ public class BlackPlayer {
     public static final BlackPlayer blackPlayer = new BlackPlayer();
     public static boolean isInBlackPieceList(AbstractChessPiece piece){
         for (AbstractChessPiece chessPiece : black_pieces_list) {
-            return chessPiece == piece;
+            if(chessPiece == piece){
+                return true;
+            }
         }
         return false;
     }

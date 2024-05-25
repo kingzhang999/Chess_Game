@@ -9,7 +9,9 @@ public class WhitePlayer {
     public static final WhitePlayer whitePlayer = new WhitePlayer();
     public static boolean isInWhitePiecesList(AbstractChessPiece piece) {
         for (AbstractChessPiece p : white_pieces_list) {
-            return p == piece;
+            if(p == piece){
+                return true;
+            }
         }
         return false;
     }

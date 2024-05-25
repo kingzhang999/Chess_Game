@@ -23,3 +23,8 @@
 2.如果被选中的被攻击的棋子在攻击范围内，将被攻击的棋子加入到readyToAttack数组中(这个数组将在SoldiersMovement类中)
 3. 当被选中的棋子攻击攻击范围内的被选中的棋子时，将攻击方棋子移动到被攻击方棋子上并消除被攻击方棋子的实例。
 4.攻击完成后，清空canAttack数组和readyToAttack数组。
+
+2024年5月25日：
+继续实现2024年5月18日的棋子吃子功能。同时提交一份备忘录。
+备忘录：
+可以尝试把SoldiersMovement类拆分为Soldiers_W_Movement类和Soldiers_B_Movement类，这样可以更好的实现代码的可读性和维护性。

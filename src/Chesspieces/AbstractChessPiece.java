@@ -23,8 +23,8 @@ public abstract class AbstractChessPiece {
     public boolean move(JButton target_chess_block){
         return moveBehavior.move(target_chess_block);
     }
-    public void attack(){
-        attackBehavior.attack();
+    public void attack(JButton target_chess_block){
+        attackBehavior.attack(target_chess_block);
     }
 
     public void setAttackBehavior(AttackBehavior attackBehavior) {
@@ -65,6 +65,11 @@ public abstract class AbstractChessPiece {
     public void setChoiceState(ChoiceState choiceState) {
         this.choiceState = choiceState;
     }
+    public AttackBehavior getAttackBehavior() {
+        return attackBehavior;
+    }
+
+
 
     public enum ChoiceState{
         CHOICE_ABLE,UN_CHOICE
