@@ -70,7 +70,6 @@ public abstract class AbstractChessPiece {
     }
 
 
-
     public enum ChoiceState{
         CHOICE_ABLE,UN_CHOICE
     }

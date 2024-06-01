@@ -25,6 +25,12 @@
 4.攻击完成后，清空canAttack数组和readyToAttack数组。
 
 2024年5月25日：
-继续实现2024年5月18日的棋子吃子功能。同时提交一份备忘录。
+继续实现2024年5月18日的棋子吃子功能。实现了scan_W_canAttack()方法同时提交一份备忘录。
 备忘录：
 可以尝试把SoldiersMovement类拆分为Soldiers_W_Movement类和Soldiers_B_Movement类，这样可以更好的实现代码的可读性和维护性。
+
+2024年6月1日：
+已经把SoldiersMovement类拆分为Soldiers_W_Movement类和Soldiers_B_Movement类，这样可以更好的实现代码的可读性和维护性。
+备忘录：
+下次可以尝试将SoldiersAttackBehaviors类拆分为Soldiers_W_AttackBehaviors类和Soldiers_B_AttackBehaviors类，
+这样可以更好的实现代码的可读性和维护性。或者尝试实现scan_B_canAttack()方法
