@@ -34,3 +34,7 @@
 备忘录：
 下次可以尝试将SoldiersAttackBehaviors类拆分为Soldiers_W_AttackBehaviors类和Soldiers_B_AttackBehaviors类，
 这样可以更好的实现代码的可读性和维护性。或者尝试实现scan_B_canAttack()方法
+
+2024年6月8日：
+已经将SoldiersAttackBehaviors类拆分为Soldiers_W_AttackBehaviors类和Soldiers_B_AttackBehaviors类，
+这样可以更好的实现代码的可读性和维护性。同时实现了scan_B_canAttack()方法。

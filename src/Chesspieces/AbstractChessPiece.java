@@ -20,9 +20,11 @@ public abstract class AbstractChessPiece {
         choiceState = ChoiceState.UN_CHOICE;//初始化为未选中状态
         //我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转
     }
+
     public boolean move(JButton target_chess_block){
         return moveBehavior.move(target_chess_block);
     }
+
     public void attack(JButton target_chess_block){
         attackBehavior.attack(target_chess_block);
     }
@@ -65,10 +67,14 @@ public abstract class AbstractChessPiece {
     public void setChoiceState(ChoiceState choiceState) {
         this.choiceState = choiceState;
     }
+
     public AttackBehavior getAttackBehavior() {
         return attackBehavior;
     }
 
+public MoveBehavior getMoveBehavior() {
+        return moveBehavior;
+    }
 
     public enum ChoiceState{
         CHOICE_ABLE,UN_CHOICE

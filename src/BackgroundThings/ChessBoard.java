@@ -56,10 +56,10 @@ public class ChessBoard extends JPanel {
                 add(board[cols][rows]);
             }
         }
-        Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][1],WHITE_SOLDIER_B);//test
+        Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
         //firstSoldier.move();
-        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][2],BLACK_SOLDIER_B);//test
-        Soldier thirdSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[4][0],WHITE_SOLDIER_B);//test
+        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
+        Soldier thirdSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[3][0],WHITE_SOLDIER_W);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -148,6 +148,7 @@ public class ChessBoard extends JPanel {
             setGameTurn(GameTurn.WHITE_TURN);
         }
     }
+
     private void addChessPiece(AbstractChessPiece chessPiece){
         all_chess_piece_list[chess_piece_list_top] = chessPiece;
         chess_piece_list_top += 1;

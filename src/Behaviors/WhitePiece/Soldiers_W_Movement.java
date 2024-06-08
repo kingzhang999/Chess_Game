@@ -59,7 +59,7 @@ public class Soldiers_W_Movement implements MoveBehavior {
 
     @Override
     public JButton[] scan_B_ChessBlock_canWalk() {
-        throw new IllegalArgumentException("This is White movement behavior, can not scan black chess block.");
+        throw new IllegalArgumentException("This is White movement behavior, can not scan black piece can walked blocks.");
     }
 
     private boolean real_W_move(JButton target_chess_block,int distance){
@@ -101,14 +101,15 @@ public class Soldiers_W_Movement implements MoveBehavior {
         nowPosition = abstractChessPiece.getChess_block();
         x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
         y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
-
     }
+
     private void updatePieceList(){
         if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
             //每次执行移动操作的时候，都需要重新判断可以移动的格子，以防上一次遇到不可移动的格子之后，将棋子卡在原地无法行动。
             chess_W_BlockList_moment.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
-            chess_W_BlockList_moment.addAll(List.of(scan_W_ChessBlock_canWalk()));
+            chess_W_BlockList_moment.addAll(List.of(scan_W_ChessBlock_canWalk()));//更新白棋可以移动的格子列表。
             abstractChessPiece.getAttackBehavior().scan_W_canAttack();//更新白棋可以攻击的格子列表。
         }
     }
+
 }
