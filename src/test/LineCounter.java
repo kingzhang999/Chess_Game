@@ -39,4 +39,3 @@ public class LineCounter {
         return lines;
     }
 }
-

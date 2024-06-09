@@ -25,8 +25,8 @@ public abstract class AbstractChessPiece {
         return moveBehavior.move(target_chess_block);
     }
 
-    public void attack(JButton target_chess_block){
-        attackBehavior.attack(target_chess_block);
+    public boolean attack(JButton target_chess_block){
+       return attackBehavior.attack(target_chess_block);
     }
 
     public void setAttackBehavior(AttackBehavior attackBehavior) {
@@ -72,7 +72,7 @@ public abstract class AbstractChessPiece {
         return attackBehavior;
     }
 
-public MoveBehavior getMoveBehavior() {
+    public MoveBehavior getMoveBehavior() {
         return moveBehavior;
     }
 

@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.ref.WeakReference;
 
 public class ChessBoard extends JPanel {
     public static final int ROWS = 8;
@@ -20,10 +21,10 @@ public class ChessBoard extends JPanel {
     private static int chess_piece_list_top = 0;
     public static final ImageIcon WHITE = new ImageIcon("resource/white.jpg");
     public static final ImageIcon BLACK = new ImageIcon("resource/black.jpg");
-    public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg");
-    public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg");
-    public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg");
-    public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg");
+    public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
 
@@ -56,10 +57,11 @@ public class ChessBoard extends JPanel {
                 add(board[cols][rows]);
             }
         }
-        Soldier firstSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
+        createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
         //firstSoldier.move();
-        Soldier secondSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
-        Soldier thirdSoldier = (Soldier) createChessPiece(PieceType.Soldier,board[3][0],WHITE_SOLDIER_W);//test
+        createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
+        createChessPiece(PieceType.Soldier,board[3][0],WHITE_SOLDIER_W);//test
+        createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -154,22 +156,33 @@ public class ChessBoard extends JPanel {
         chess_piece_list_top += 1;
     }
 
+    public static void removeChessPiece(AbstractChessPiece piece){
+        for (int i = 0; i < chess_piece_list_top; i++) {
+            if (all_chess_piece_list[i] == piece) {
+                all_chess_piece_list[i] = null;
+                System.gc();//垃圾回收
+                chess_piece_list_top--;
+                break;
+            }
+        }
+    }
+
     public AbstractChessPiece createChessPiece(PieceType pieceType,JButton chess_block,
                                                       ImageIcon chess_piece){
         switch (pieceType){
             case Soldier -> {
                 if (chess_piece instanceof WhitePiece){
-                    Soldier soldier = new Soldier(chess_block,chess_piece);
-                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
+                    WeakReference<Soldier> soldier = new WeakReference<>(new Soldier(chess_block,chess_piece));
+                    addChessPiece(soldier.get());//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
-                    WhitePlayer.add_W_Piece(soldier);
-                    return soldier;
+                    WhitePlayer.add_W_Piece(soldier.get());
+                    return soldier.get();
                 }else if (chess_piece instanceof BlackPiece){
-                    Soldier soldier = new Soldier(chess_block,chess_piece);
-                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
+                    WeakReference<Soldier> soldier = new WeakReference<>(new Soldier(chess_block,chess_piece));
+                    addChessPiece(soldier.get());//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
-                    BlackPlayer.add_B_Piece(soldier);
-                    return soldier;
+                    BlackPlayer.add_B_Piece(soldier.get());
+                    return soldier.get();
                 }
             }
             default -> throw new IllegalArgumentException("NO SUCH TYPE PIECE");
@@ -196,6 +209,7 @@ public class ChessBoard extends JPanel {
 
         private void whitePlayerMove(boolean hasPieces, JButton trigger) {
             System.out.println("white turn");
+            //System.out.println("hasPieces && WhitePlayer.w_readyToMove.isEmpty: "+(hasPieces && WhitePlayer.w_readyToMove.isEmpty()));
             if (hasPieces && WhitePlayer.w_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
 
                 //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
@@ -215,7 +229,7 @@ public class ChessBoard extends JPanel {
 
                 AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
                 boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
-
+                //System.out.println("here");
                 //System.out.println("isSuccess: "+isSuccess);//test
 
                 if (isSuccess) {
@@ -227,6 +241,27 @@ public class ChessBoard extends JPanel {
                     }//如果移动成功，则判断当前轮到谁走
                     changeSide();
                 }
+            } else if (hasPieces && !WhitePlayer.w_readyToMove.isEmpty()) {
+
+                AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
+
+                //判断被选中的棋子是否为黑棋，如果是，则进行攻击。
+                boolean isSuccess = false;
+                if(findChessPiece(trigger).getChess_piece() instanceof BlackPiece){
+                    isSuccess = abstractChessPiece.attack(trigger);//移动棋子攻击。
+                }
+
+                //System.out.println("isSuccess: "+isSuccess);//test
+
+                if (isSuccess) {
+                    //攻击完后将棋子恢复至未被选择状态。
+                    abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
+                    //攻击成功后才将Solder的isFirstMove设为false。
+                    if(abstractChessPiece instanceof Soldier){
+                        ((Soldier) abstractChessPiece).setFirstMove(false);
+                    }//如果攻击成功，则判断当前轮到谁走
+                    changeSide();
+                }
             }
         }
 
@@ -236,6 +271,7 @@ public class ChessBoard extends JPanel {
 
                 //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
                 AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
+
                 //如果发现此时被选中的棋子不是黑棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
                 if(!findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
                     //将棋子设为已选择状态。
@@ -258,6 +294,27 @@ public class ChessBoard extends JPanel {
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }
                     //如果移动成功，则判断当前轮到谁走
+                    changeSide();
+                }
+            }else if (hasPieces && !BlackPlayer.b_readyToMove.isEmpty()) {
+
+                AbstractChessPiece abstractChessPiece = BlackPlayer.getNext_B_ReadyToMove();
+
+                //判断被选中的棋子是否为白棋，如果是，则进行攻击。
+                boolean isSuccess = false;
+                if(findChessPiece(trigger).getChess_piece() instanceof WhitePiece){
+                    isSuccess = abstractChessPiece.attack(trigger);//移动棋子攻击。
+                }
+
+                //System.out.println("isSuccess: "+isSuccess);//test
+
+                if (isSuccess) {
+                    //攻击完后将棋子恢复至未被选择状态。
+                    abstractChessPiece.setChoiceState(AbstractChessPiece.ChoiceState.UN_CHOICE);
+                    //攻击成功后才将Solder的isFirstMove设为false。
+                    if(abstractChessPiece instanceof Soldier){
+                        ((Soldier) abstractChessPiece).setFirstMove(false);
+                    }//如果攻击成功，则判断当前轮到谁走
                     changeSide();
                 }
             }
@@ -300,6 +357,11 @@ public class ChessBoard extends JPanel {
     }
     enum PieceType {
         Soldier, Queen
+    }
+
+     public enum BackGroundType {
+        WhiteBack,
+        BlackBack,
     }
 
 }

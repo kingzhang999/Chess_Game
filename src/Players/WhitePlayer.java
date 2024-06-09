@@ -15,22 +15,27 @@ public class WhitePlayer {
         }
         return false;
     }
+
     public static void add_W_Piece(AbstractChessPiece piece) {
         white_pieces_list[white_pieces_count] = piece;
         white_pieces_count++;
     }
+
     public static void remove_W_Piece(AbstractChessPiece piece) {
         for (int i = 0; i < white_pieces_count; i++) {
             if (white_pieces_list[i] == piece) {
                 white_pieces_list[i] = null;
+                System.gc();//垃圾回收
                 white_pieces_count--;
                 break;
             }
         }
     }
+
     public static void add_W_ReadyToMove(AbstractChessPiece piece) {
         w_readyToMove.push(piece);
     }
+
     public static AbstractChessPiece getNext_W_ReadyToMove() {
         return w_readyToMove.pop();
     }

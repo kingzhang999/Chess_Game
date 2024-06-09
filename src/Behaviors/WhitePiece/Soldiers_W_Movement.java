@@ -26,7 +26,8 @@ public class Soldiers_W_Movement implements MoveBehavior {
         distance = ChessBoard.findElement(ChessBoard.board,target_chess_block)[0] - x;
 
         updatePieceList();
-        //System.out.println("ChoiceState: "+WhitePlayer.isInWhitePiecesList(abstractChessPiece));
+        //System.out.println("ChoiceState: "+(abstractChessPiece.getChoiceState() == AbstractChessPiece.ChoiceState.CHOICE_ABLE));
+
         if (abstractChessPiece.getFirstMove() && distance <= 2 && abstractChessPiece.getChoiceState()
                 == AbstractChessPiece.ChoiceState.CHOICE_ABLE){
             if(WhitePlayer.isInWhitePiecesList(abstractChessPiece)){
@@ -73,7 +74,7 @@ public class Soldiers_W_Movement implements MoveBehavior {
             //获取要去的方块此时的贴图。
             ImageIcon targetImageIcon = (ImageIcon) target_chess_block.getIcon();
 
-            ChessBoard.changeChessBoard(x,y, abstractChessPiece.getChess_block_iconImage());//将士兵目前待在这儿的方块还原成士兵没来这时的样子。
+            ChessBoard.changeChessBoard(x,y,abstractChessPiece.getChess_block_iconImage());//将士兵目前待在这儿的方块还原成士兵没来这时的样子。
             abstractChessPiece.setChess_block_iconImage(targetImageIcon);//将士兵将要去的方块目前的状况记录下来。
             //将棋子所绑定的格子替换为目标格子。
             abstractChessPiece.setChess_block(target_chess_block);
@@ -96,7 +97,7 @@ public class Soldiers_W_Movement implements MoveBehavior {
         return false;//移动失败。
     }
 
-    private void updateLocation(){
+    public void updateLocation(){
         //实时获取现在所处在的格子和位置。
         nowPosition = abstractChessPiece.getChess_block();
         x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
