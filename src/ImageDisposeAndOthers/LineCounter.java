@@ -1,4 +1,4 @@
-package test;
+package ImageDisposeAndOthers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,7 +12,7 @@ public class LineCounter {
         System.out.println("项目代码总行数： " + totalLines);
     }
 
-    private static int countLines(File directory) {
+    public static int countLines(File directory) {
         int lines = 0;
         File[] files = directory.listFiles();
         if (files != null) {

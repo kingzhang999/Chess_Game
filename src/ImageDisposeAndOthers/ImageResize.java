@@ -1,4 +1,4 @@
-package ImageDispose;
+package ImageDisposeAndOthers;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
