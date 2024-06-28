@@ -1,9 +1,6 @@
 package BackgroundThings;
 
-import Chesspieces.AbstractChessPiece;
-import Chesspieces.BlackPiece;
-import Chesspieces.Soldier;
-import Chesspieces.WhitePiece;
+import Chesspieces.*;
 import Players.BlackPlayer;
 import Players.WhitePlayer;
 
@@ -11,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.ref.WeakReference;
 
 public class ChessBoard extends JPanel {
     public static final int ROWS = 8;
@@ -25,9 +21,13 @@ public class ChessBoard extends JPanel {
     public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
     public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_CAR_W = new WhitePiece("resource/white_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_CAR_B = new WhitePiece("resource/white_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_CAR_W = new BlackPiece("resource/black_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_CAR_B = new BlackPiece("resource/black_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
-
     public static JButton[][] board;
     public static AbstractChessPiece[] all_chess_piece_list;
 
@@ -60,7 +60,7 @@ public class ChessBoard extends JPanel {
         createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
         //firstSoldier.move();
         createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
-        createChessPiece(PieceType.Soldier,board[3][0],WHITE_SOLDIER_W);//test
+        createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
         createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
     }
 
@@ -172,17 +172,32 @@ public class ChessBoard extends JPanel {
         switch (pieceType){
             case Soldier -> {
                 if (chess_piece instanceof WhitePiece){
-                    WeakReference<Soldier> soldier = new WeakReference<>(new Soldier(chess_block,chess_piece));
-                    addChessPiece(soldier.get());//将创建好的棋子放入数组中统一管理
+                    Soldier soldier = new Soldier(chess_block,chess_piece);
+                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
-                    WhitePlayer.add_W_Piece(soldier.get());
-                    return soldier.get();
+                    WhitePlayer.add_W_Piece(soldier);
+                    return soldier;
                 }else if (chess_piece instanceof BlackPiece){
-                    WeakReference<Soldier> soldier = new WeakReference<>(new Soldier(chess_block,chess_piece));
-                    addChessPiece(soldier.get());//将创建好的棋子放入数组中统一管理
+                    Soldier soldier = new Soldier(chess_block,chess_piece);
+                    addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
-                    BlackPlayer.add_B_Piece(soldier.get());
-                    return soldier.get();
+                    BlackPlayer.add_B_Piece(soldier);
+                    return soldier;
+                }
+            }
+            case Car -> {
+                if (chess_piece instanceof WhitePiece){
+                    Car car = new Car(chess_block,chess_piece);
+                    addChessPiece(car);//将创建好的棋子放入数组中统一管理
+                    //将白棋加入白棋子列表中
+                    WhitePlayer.add_W_Piece(car);
+                    return car;
+                }else if (chess_piece instanceof BlackPiece){
+                   Car car = new Car(chess_block,chess_piece);
+                    addChessPiece(car);//将创建好的棋子放入数组中统一管理
+                    //将黑棋子加入黑棋子列表中
+                    BlackPlayer.add_B_Piece(car);
+                    return car;
                 }
             }
             default -> throw new IllegalArgumentException("NO SUCH TYPE PIECE");
@@ -356,7 +371,7 @@ public class ChessBoard extends JPanel {
         WHITE_TURN, BLACK_TURN
     }
     enum PieceType {
-        Soldier, Queen
+        Soldier, Queen,Car
     }
 
      public enum BackGroundType {
