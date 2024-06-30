@@ -49,6 +49,8 @@ public class Soldiers_W_Movement implements MoveBehavior {
         for (;x_copy + 1 <ChessBoard.ROWS;x_copy++){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy加一以检查下一个格子。
             if (!ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y])){
                 chess_W_BlockList_moments.add(ChessBoard.board[x_copy+1][y]);
+            }else if(ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y])){
+                break;
             }
         }
 
@@ -66,10 +68,7 @@ public class Soldiers_W_Movement implements MoveBehavior {
     private boolean real_W_move(JButton target_chess_block,int distance){
         if(x+distance < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
                 chess_W_BlockList_moment.contains(ChessBoard.getChessBoardElement(x+distance,y))
-        && chess_W_BlockList_moment.contains(target_chess_block)){
-
-            //获取当前所处方块此时的贴图。
-            ImageIcon nowIcon = (ImageIcon) nowPosition.getIcon();//我在JButton的构造函数中传入的就是ImageIcon所以这里可以强转
+        && chess_W_BlockList_moment.contains(target_chess_block)){//这一行对士兵来说不是无用的
 
             //获取要去的方块此时的贴图。
             ImageIcon targetImageIcon = (ImageIcon) target_chess_block.getIcon();
