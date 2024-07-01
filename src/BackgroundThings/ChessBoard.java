@@ -61,6 +61,7 @@ public class ChessBoard extends JPanel {
         //firstSoldier.move();
         createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
         createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
+        createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
         createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
     }
 
@@ -131,11 +132,7 @@ public class ChessBoard extends JPanel {
     }
 
     public static boolean hasPiece(JButton testObject){//检测棋格上是否有棋子。
-        if((ImageIcon)testObject.getIcon() instanceof WhitePiece || (ImageIcon)testObject.getIcon() instanceof BlackPiece){
-            return true;
-        }else {
-            return false;
-        }
+        return testObject.getIcon() instanceof WhitePiece || testObject.getIcon() instanceof BlackPiece;
     }
     /* if((ImageIcon)testObject.getIcon() instanceof WhitePiece || (ImageIcon)testObject.getIcon() instanceof BlackPiece){
             return true;
@@ -167,8 +164,8 @@ public class ChessBoard extends JPanel {
         }
     }
 
-    public AbstractChessPiece createChessPiece(PieceType pieceType,JButton chess_block,
-                                                      ImageIcon chess_piece){
+    public void createChessPiece(PieceType pieceType, JButton chess_block,
+                                 ImageIcon chess_piece){
         switch (pieceType){
             case Soldier -> {
                 if (chess_piece instanceof WhitePiece){
@@ -176,13 +173,13 @@ public class ChessBoard extends JPanel {
                     addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
                     WhitePlayer.add_W_Piece(soldier);
-                    return soldier;
+                    return;
                 }else if (chess_piece instanceof BlackPiece){
                     Soldier soldier = new Soldier(chess_block,chess_piece);
                     addChessPiece(soldier);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(soldier);
-                    return soldier;
+                    return;
                 }
             }
             case Car -> {
@@ -191,13 +188,13 @@ public class ChessBoard extends JPanel {
                     addChessPiece(car);//将创建好的棋子放入数组中统一管理
                     //将白棋加入白棋子列表中
                     WhitePlayer.add_W_Piece(car);
-                    return car;
+                    return;
                 }else if (chess_piece instanceof BlackPiece){
                    Car car = new Car(chess_block,chess_piece);
                     addChessPiece(car);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(car);
-                    return car;
+                    return;
                 }
             }
             default -> throw new IllegalArgumentException("NO SUCH TYPE PIECE");

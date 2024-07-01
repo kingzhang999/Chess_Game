@@ -1,0 +1,147 @@
+package Behaviors.BlackPiece.AttackBehaviors;
+
+import BackgroundThings.ChessBoard;
+import Behaviors.AttackBehavior;
+import Behaviors.BlackPiece.Movement.Cars_B_Movement;
+import Chesspieces.AbstractChessPiece;
+import Chesspieces.BlackPiece;
+import Chesspieces.Car;
+import Chesspieces.WhitePiece;
+import Players.WhitePlayer;
+
+import javax.swing.*;
+import java.util.ArrayList;
+
+public class Cars_B_AttackBehaviors implements AttackBehavior {
+    private int x;
+    private int y;
+    private JButton nowPosition;
+    Car car;
+    private final ArrayList<JButton> attack_able_B_blocks = new ArrayList<>();
+
+    public Cars_B_AttackBehaviors(Car car) {
+        this.car = car;
+        updateLocation();
+    }
+
+    @Override
+    public boolean attack(JButton being_attacked_chess_block) {
+        scan_B_canAttack();//刷新可攻击的位置。
+        int x_future = ChessBoard.findElement(ChessBoard.board,being_attacked_chess_block)[0];
+        int y_future = ChessBoard.findElement(ChessBoard.board,being_attacked_chess_block)[1];
+
+        if(attack_able_B_blocks.contains(being_attacked_chess_block)){
+
+            //获取要去的方块此时的贴图。
+            WhitePiece targetImageIcon = (WhitePiece) being_attacked_chess_block.getIcon();
+
+            //士兵走后便可以把要去的这个方块还原成没有士兵在这里时的样子。
+            ImageIcon realImageIcon;
+            if(targetImageIcon.getBackground() == ChessBoard.BackGroundType.WhiteBack){
+                realImageIcon = ChessBoard.WHITE;
+            }else {
+                realImageIcon = ChessBoard.BLACK;
+            }
+
+            ChessBoard.changeChessBoard(x,y,car.getChess_block_iconImage());//将士兵目前待在这儿的方块还原成士兵没来这时的样子。
+            car.setChess_block_iconImage(realImageIcon);//将士兵将要去的方块目前的状况记录下来。
+
+            for(AbstractChessPiece car1 : ChessBoard.all_chess_piece_list){
+                if(car1 != null && car1.getChess_block() == being_attacked_chess_block){
+                    deletePieces(car1);//将要去的方块上的敌方棋子删除。
+                    //System.out.println("delete: "+soldier1);
+                }
+            }
+
+            //将棋子所绑定的格子替换为目标格子。
+            car.setChess_block(being_attacked_chess_block);
+
+            //System.out.println("targetImageIcon instanceof WhiteBackGround: "+(targetImageIcon instanceof WhiteBackGround));
+            if(targetImageIcon.getBackground() == ChessBoard.BackGroundType.WhiteBack){//如要去的格子是白格子，则把要去的格子的背景换成相应棋子在白格子下的背景。
+
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_CAR_W);
+
+            }else {//不然则把要去的格子的背景换成相应棋子在黑格子下的背景。
+
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_CAR_B);
+
+            }
+            ChessBoard.getChessBoardElement(x_future,y_future).repaint();//重绘移动完后格子的贴图。
+            ((Cars_B_Movement)car.getMoveBehavior()).updateLocation();//更新移动行为中棋子的所在位置。
+            scan_B_canAttack();//刷新可攻击的位置。
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void scan_W_canAttack() {
+        throw new IllegalArgumentException("This is Black Piece attack behavior, can not scan White Piece can attacked blocks.");
+    }
+
+    @Override
+    public void scan_B_canAttack() {
+        //此方法会在移动之后，攻击之前和攻击之后被调用。
+        attack_able_B_blocks.clear();//清空之前的可攻击位置
+        updateLocation();//更新位置信息
+
+        int x_copy = x;
+        int y_copy = y;
+
+        //System.out.println("x_copy: "+x_copy);//test
+        ArrayList<JButton> attack_able_B_blocks_temp = new ArrayList<>();//用于临时存储可攻击的位置
+        for (;x_copy + 1 < ChessBoard.ROWS;x_copy++){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy加一以检查下一个格子。
+            if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y]) &&
+                    !(ChessBoard.getChessBoardElement(x_copy + 1,y).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x_copy+1][y]);
+                break;//在遇到的第一个非白棋子时，则停止检查。
+            }
+        }
+
+        for (;y_copy + 1 < ChessBoard.COLS;y_copy++){
+            if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy+1]) &&
+                    !(ChessBoard.getChessBoardElement(x,y_copy + 1).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy+1]);
+                break;//在遇到的第一个非白棋子时，则停止检查。
+            }
+        }
+
+        x_copy = x;//还原x_copy的值。
+        y_copy = y;//还原y_copy的值。
+
+        for (;x_copy > 0;x_copy--){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy减一以检查下一个格子。
+            if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y]) &&
+                    !(ChessBoard.getChessBoardElement(x_copy - 1,y).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x_copy-1][y]);
+                break;//在遇到的第一个非白棋子时，则停止检查。
+            }
+        }
+
+        for (;y_copy > 0;y_copy--){
+            if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy-1]) &&
+                    !(ChessBoard.getChessBoardElement(x,y_copy - 1).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy-1]);
+                break;//在遇到的第一个非白棋子时，则停止检查。
+            }
+        }
+
+        /*for (JButton chess_blocks : attack_able_B_blocks_temp){
+            ChessBoard.findElement_test(ChessBoard.board,chess_blocks,"car_B_attack");//测试能否找到元素。
+        }*/
+
+        attack_able_B_blocks.addAll(attack_able_B_blocks_temp);
+    }
+
+    @Override
+    public void deletePieces(AbstractChessPiece abstractChessPiece) {
+        WhitePlayer.remove_W_Piece(abstractChessPiece);
+        ChessBoard.removeChessPiece(abstractChessPiece);
+    }
+
+    public void updateLocation(){
+        //实时获取现在所处在的格子和位置。
+        nowPosition = car.getChess_block();
+        x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
+        y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
+    }
+}
