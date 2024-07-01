@@ -1,4 +1,4 @@
-package Behaviors.BlackPiece;
+package Behaviors.BlackPiece.Movement;
 
 import BackgroundThings.ChessBoard;
 import Behaviors.MoveBehavior;

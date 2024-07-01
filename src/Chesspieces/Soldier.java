@@ -1,11 +1,11 @@
 package Chesspieces;
 
 import Behaviors.AttackBehavior;
-import Behaviors.BlackPiece.Soldiers_B_AttackBehaviors;
+import Behaviors.BlackPiece.AttackBehaviors.Soldiers_B_AttackBehaviors;
 import Behaviors.MoveBehavior;
-import Behaviors.WhitePiece.Soldiers_W_AttackBehaviors;
-import Behaviors.BlackPiece.Soldiers_B_Movement;
-import Behaviors.WhitePiece.Soldiers_W_Movement;
+import Behaviors.WhitePiece.AttackBehaviors.Soldiers_W_AttackBehaviors;
+import Behaviors.BlackPiece.Movement.Soldiers_B_Movement;
+import Behaviors.WhitePiece.Movement.Soldiers_W_Movement;
 
 
 import javax.swing.*;

@@ -1,4 +1,4 @@
-package Behaviors.WhitePiece;
+package Behaviors.WhitePiece.Movement;
 
 import BackgroundThings.ChessBoard;
 import Behaviors.MoveBehavior;
@@ -80,9 +80,9 @@ public class Cars_W_Movement implements MoveBehavior {
         JButton[] chessBlockList_official = new JButton[chess_W_BlockList_moments.size()];//将ArrayList转换为JButton数组。
         chessBlockList_official = chess_W_BlockList_moments.toArray(chessBlockList_official);
 
-        for (JButton chess_blockss : chessBlockList_official){
-            ChessBoard.findElement_test(ChessBoard.board,chess_blockss,"car_W_move");//测试能否找到元素。
-        }
+        /*for (JButton chess_blocks : chessBlockList_official){
+            ChessBoard.findElement_test(ChessBoard.board,chess_blocks,"car_W_move");//测试能否找到元素。
+        }*/
 
         return chessBlockList_official;
     }
@@ -140,7 +140,7 @@ public class Cars_W_Movement implements MoveBehavior {
             //每次执行移动操作的时候，都需要重新判断可以移动的格子，以防上一次遇到不可移动的格子之后，将棋子卡在原地无法行动。
             chess_W_BlockList_moment_car.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
             chess_W_BlockList_moment_car.addAll(List.of(scan_W_ChessBlock_canWalk()));//更新白棋可以移动的格子列表。
-            //car.getAttackBehavior().scan_W_canAttack();//更新白棋可以攻击的格子列表。//攻击行为暂时还没有实现。
+            car.getAttackBehavior().scan_W_canAttack();//更新白棋可以攻击的格子列表。//攻击行为暂时还没有实现。
         }
     }
 }

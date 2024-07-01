@@ -44,3 +44,9 @@
 
 2024年6月28日：
 开始开发车的移动功能。写完了Cars_W_Movement类中的scan_W_ChessBlock_canWalk()方法。
+
+2024年6月30日：
+写完了Cars_W_Movement类
+
+2024年7月1日：
+写完了WhiteCar的攻击和移动功能。
