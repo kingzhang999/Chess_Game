@@ -25,6 +25,10 @@ public class ChessBoard extends JPanel {
     public static final WhitePiece WHITE_CAR_B = new WhitePiece("resource/white_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public static final BlackPiece BLACK_CAR_W = new BlackPiece("resource/black_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
     public static final BlackPiece BLACK_CAR_B = new BlackPiece("resource/black_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_HORSE_W = new WhitePiece("resource/white_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_HORSE_B = new WhitePiece("resource/white_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_HORSE_W = new BlackPiece("resource/black_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_HORSE_B = new BlackPiece("resource/black_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
 
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
@@ -63,6 +67,7 @@ public class ChessBoard extends JPanel {
         createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
         createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
         createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
+        createChessPiece(ChessBoard.PieceType.Horse,board[2][5],WHITE_HORSE_W);
     }
 
     public static ChessBoard getChessBoard(){
@@ -194,6 +199,21 @@ public class ChessBoard extends JPanel {
                     addChessPiece(car);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(car);
+                    return;
+                }
+            }
+            case Horse -> {
+                if (chess_piece instanceof WhitePiece){
+                    Horse horse = new Horse(chess_block,chess_piece);
+                    addChessPiece(horse);//将创建好的棋子放入数组中统一管理
+                    //将白棋加入白棋子列表中
+                    WhitePlayer.add_W_Piece(horse);
+                    return;
+                }else if (chess_piece instanceof BlackPiece){
+                    Horse horse = new Horse(chess_block,chess_piece);
+                    addChessPiece(horse);//将创建好的棋子放入数组中统一管理
+                    //将黑棋子加入黑棋子列表中
+                    BlackPlayer.add_B_Piece(horse);
                     return;
                 }
             }
@@ -368,7 +388,7 @@ public class ChessBoard extends JPanel {
         WHITE_TURN, BLACK_TURN
     }
     enum PieceType {
-        Soldier, Queen,Car
+        Soldier, Queen,Car,Horse
     }
 
      public enum BackGroundType {
