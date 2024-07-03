@@ -39,14 +39,13 @@ public class Horses_W_Movement implements MoveBehavior {
         int target_x = ChessBoard.findElement(ChessBoard.board,target_chess_block)[0];
         int target_y = ChessBoard.findElement(ChessBoard.board,target_chess_block)[1];
         //判断是否可以移动到目标格子。
-        if(target_x < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
-                chess_W_BlockList_moment_horse.contains(ChessBoard.getChessBoardElement(target_x,target_y))
-                && target_y < ChessBoard.COLS && target_y >= 0 && target_x >= 0){
+        if(//防止棋子出界并判断下一个格子是否可以移动。
+                chess_W_BlockList_moment_horse.contains(ChessBoard.getChessBoardElement(target_x,target_y))){
 
             //获取要去的方块此时的贴图。
             ImageIcon targetImageIcon = (ImageIcon) target_chess_block.getIcon();
 
-            ChessBoard.changeChessBoard(x,y,horse.getChess_block_iconImage());//将马目前待在这儿的方块还原成士兵没来这时的样子。
+            ChessBoard.changeChessBoard(x,y,horse.getChess_block_iconImage());//将马目前待在这儿的方块还原成马没来这时的样子。
             horse.setChess_block_iconImage(targetImageIcon);//将马将要去的方块目前的状况记录下来。
             //将棋子所绑定的格子替换为目标格子。
             horse.setChess_block(target_chess_block);
@@ -79,13 +78,13 @@ public class Horses_W_Movement implements MoveBehavior {
         //找旗子右边两格处的上面和下面可以走动的格子。
         if(y_copy + 2 < ChessBoard.COLS){
             if(x_copy - 1 >= 0){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2 ))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2));
                 }
             }
 
             if(x_copy + 1 < ChessBoard.ROWS){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement( x_copy + 1,y_copy + 2))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2));
                 }
             }
@@ -94,13 +93,13 @@ public class Horses_W_Movement implements MoveBehavior {
         //找旗子左边两格处的上面和下面可以走动的格子。
         if(y_copy - 2 >= 0){
             if(x_copy - 1 >= 0){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2 ))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2));
                 }
             }
 
             if(x_copy + 1 < ChessBoard.ROWS){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement( x_copy + 1,y_copy - 2))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2));
                 }
             }
@@ -109,13 +108,13 @@ public class Horses_W_Movement implements MoveBehavior {
         //找旗子右边一格处的上面和下面可以走动的格子。
         if(y_copy + 1 < ChessBoard.COLS){
             if(x_copy - 2 >= 0){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1 ))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1));
                 }
             }
 
             if(x_copy + 2 < ChessBoard.ROWS){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement( x_copy + 2,y_copy + 1))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1));
                 }
             }
@@ -124,13 +123,13 @@ public class Horses_W_Movement implements MoveBehavior {
         //找旗子左边一格处的上面和下面可以走动的格子。
         if(y_copy - 1 >= 0){
             if(x_copy - 2 >= 0){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1 ))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1));
                 }
             }
 
             if(x_copy + 2 < ChessBoard.ROWS){
-                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement( x_copy + 2,y_copy - 1))){
+                if(!ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1))){
                     chess_W_BlockList_moments.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1));
                 }
             }
@@ -163,7 +162,7 @@ public class Horses_W_Movement implements MoveBehavior {
             //每次执行移动操作的时候，都需要重新判断可以移动的格子，以防上一次遇到不可移动的格子之后，将棋子卡在原地无法行动。
             chess_W_BlockList_moment_horse.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
             chess_W_BlockList_moment_horse.addAll(List.of(scan_W_ChessBlock_canWalk()));//更新白棋可以移动的格子列表。
-            //horse.getAttackBehavior().scan_W_canAttack();//更新白棋可以攻击的格子列表。//攻击行为暂时还没有实现。
+            horse.getAttackBehavior().scan_W_canAttack();//更新白棋可以攻击的格子列表。//攻击行为暂时还没有实现。
         }
     }
 }

@@ -35,7 +35,7 @@ public class Cars_W_AttackBehaviors implements AttackBehavior {
             //获取要去的方块此时的贴图。
             BlackPiece targetImageIcon = (BlackPiece) being_attacked_chess_block.getIcon();
 
-            //士兵走后便可以把要去的这个方块还原成没有士兵在这里时的样子。
+            //车走后便可以把要去的这个方块还原成没有车在这里时的样子。
             ImageIcon realImageIcon;
             if(targetImageIcon.getBackground() == ChessBoard.BackGroundType.WhiteBack){
                 realImageIcon = ChessBoard.WHITE;
@@ -43,8 +43,8 @@ public class Cars_W_AttackBehaviors implements AttackBehavior {
                 realImageIcon = ChessBoard.BLACK;
             }
 
-            ChessBoard.changeChessBoard(x,y,car.getChess_block_iconImage());//将士兵目前待在这儿的方块还原成士兵没来这时的样子。
-            car.setChess_block_iconImage(realImageIcon);//将士兵将要去的方块目前的状况记录下来。
+            ChessBoard.changeChessBoard(x,y,car.getChess_block_iconImage());//将车目前待在这儿的方块还原成士兵没来这时的样子。
+            car.setChess_block_iconImage(realImageIcon);//将车将要去的方块目前的状况记录下来。
 
             for(AbstractChessPiece car1 : ChessBoard.all_chess_piece_list){
                 if(car1 != null && car1.getChess_block() == being_attacked_chess_block){

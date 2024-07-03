@@ -98,7 +98,7 @@ public class Cars_W_Movement implements MoveBehavior {
         //判断是否可以移动到目标格子。
         if(target_x < ChessBoard.ROWS &&//防止棋子出界并判断下一个格子是否可以移动。
                 chess_W_BlockList_moment_car.contains(ChessBoard.getChessBoardElement(target_x,target_y))
-                && target_y < ChessBoard.COLS && target_y >= 0 && target_x >= 0){
+                /*&& target_y < ChessBoard.COLS && target_y >= 0 && target_x >= 0*/){//可能没用，先注释掉。
 
             //获取要去的方块此时的贴图。
             ImageIcon targetImageIcon = (ImageIcon) target_chess_block.getIcon();

@@ -1,5 +1,6 @@
 package Chesspieces;
 
+import Behaviors.WhitePiece.AttackBehaviors.Houses_W_AttackBehaviors;
 import Behaviors.WhitePiece.Movement.Horses_W_Movement;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ public class Horse extends AbstractChessPiece{
         super(chess_blocks, chess_piece);
         chess_block.setIcon(chess_piece);
         setMoveBehavior(new Horses_W_Movement(this));//test
+        setAttackBehavior(new Houses_W_AttackBehaviors(this));//test
         //设置棋子的移动行为一定要放在设置棋子贴图之后因为判断用WhitePiece的移动行为还是BlackPiece移动行为，依赖于棋子贴图
         //setMoveBehavior(useWhiteMovementOrBlackMovement());//设置棋子的移动行为//还没写
         //设置棋子的攻击行为一定要放在设置棋子贴图之后因为判断用WhitePiece的攻击行为还是BlackPiece攻击行为，依赖于棋子贴图
