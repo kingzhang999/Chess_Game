@@ -68,6 +68,7 @@ public class ChessBoard extends JPanel {
         createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
         createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
         createChessPiece(ChessBoard.PieceType.Horse,board[2][5],WHITE_HORSE_W);
+        createChessPiece(ChessBoard.PieceType.Horse,board[7][1],BLACK_HORSE_B);
     }
 
     public static ChessBoard getChessBoard(){

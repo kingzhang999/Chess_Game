@@ -1,39 +1,39 @@
-package Behaviors.WhitePiece.AttackBehaviors;
+package Behaviors.BlackPiece.AttackBehaviors;
 
 import BackgroundThings.ChessBoard;
 import Behaviors.AttackBehavior;
-import Behaviors.WhitePiece.Movement.Horses_W_Movement;
+import Behaviors.BlackPiece.Movement.Horses_B_Movement;
 import Chesspieces.AbstractChessPiece;
 import Chesspieces.BlackPiece;
 import Chesspieces.Horse;
 import Chesspieces.WhitePiece;
-import Players.BlackPlayer;
+import Players.WhitePlayer;
 
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class Houses_W_AttackBehaviors implements AttackBehavior {
+public class Horses_B_AttackBehaviors implements AttackBehavior {
     private int x;
     private int y;
     private JButton nowPosition;
     Horse horse;
-    private final ArrayList<JButton> attack_able_W_blocks = new ArrayList<>();
+    private final ArrayList<JButton> attack_able_B_blocks = new ArrayList<>();
 
-    public Houses_W_AttackBehaviors(Horse horse) {
+    public Horses_B_AttackBehaviors(Horse horse) {
         this.horse = horse;
         updateLocation();
     }
 
     @Override
     public boolean attack(JButton being_attacked_chess_block) {
-        scan_W_canAttack();//刷新可攻击的位置。
+        scan_B_canAttack();//刷新可攻击的位置。
         int x_future = ChessBoard.findElement(ChessBoard.board,being_attacked_chess_block)[0];
         int y_future = ChessBoard.findElement(ChessBoard.board,being_attacked_chess_block)[1];
 
-        if(attack_able_W_blocks.contains(being_attacked_chess_block)){
+        if(attack_able_B_blocks.contains(being_attacked_chess_block)){
 
             //获取要去的方块此时的贴图。
-            BlackPiece targetImageIcon = (BlackPiece) being_attacked_chess_block.getIcon();
+            WhitePiece targetImageIcon = (WhitePiece) being_attacked_chess_block.getIcon();
 
             //马走后便可以把要去的这个方块还原成没有马在这里时的样子。
             ImageIcon realImageIcon;
@@ -59,45 +59,45 @@ public class Houses_W_AttackBehaviors implements AttackBehavior {
             //System.out.println("targetImageIcon instanceof WhiteBackGround: "+(targetImageIcon instanceof WhiteBackGround));
             if(targetImageIcon.getBackground() == ChessBoard.BackGroundType.WhiteBack){//如要去的格子是白格子，则把要去的格子的背景换成相应棋子在白格子下的背景。
 
-                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.WHITE_HORSE_W);
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_HORSE_W);
 
             }else {//不然则把要去的格子的背景换成相应棋子在黑格子下的背景。
 
-                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.WHITE_HORSE_B);
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_HORSE_B);
 
             }
             ChessBoard.getChessBoardElement(x_future,y_future).repaint();//重绘移动完后格子的贴图。
-            ((Horses_W_Movement)horse.getMoveBehavior()).updateLocation();//更新移动行为中棋子的所在位置。
-            scan_W_canAttack();//刷新可攻击的位置。
+            ((Horses_B_Movement)horse.getMoveBehavior()).updateLocation();//更新移动行为中棋子的所在位置。
+            scan_B_canAttack();//刷新可攻击的位置。
             return true;
         }
         return false;
     }
 
     @Override
-    public void scan_W_canAttack() {
+    public void scan_B_canAttack() {
         //此方法会在移动之后，攻击之前和攻击之后被调用。
-        attack_able_W_blocks.clear();//清空之前的可攻击位置
+        attack_able_B_blocks.clear();//清空之前的可攻击位置
         updateLocation();//更新位置信息
 
         int x_copy = x;//复制x的值，以防止在循环中修改原值。
         int y_copy = y;//复制y的值，以防止在循环中修改原值。、
 
-        ArrayList<JButton> attack_able_W_blocks_temp = new ArrayList<>();
+        ArrayList<JButton> attack_able_B_blocks_temp = new ArrayList<>();
 
         //找旗子右边两格处的上面和下面可以攻击的格子。
         if(y_copy + 2 < ChessBoard.COLS){
             if(x_copy - 1 >= 0){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2));
+                        !(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy + 2));
                 }
             }
 
             if(x_copy + 1 < ChessBoard.ROWS){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2));
+                        !(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy + 2));
                 }
             }
         }
@@ -106,15 +106,15 @@ public class Houses_W_AttackBehaviors implements AttackBehavior {
         if(y_copy - 2 >= 0){
             if(x_copy - 1 >= 0){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2 )) &&
-                        !(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2));
+                        !(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 1,y_copy - 2));
                 }
             }
 
             if(x_copy + 1 < ChessBoard.ROWS){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2));
+                        !(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 1,y_copy - 2));
                 }
             }
         }
@@ -123,15 +123,15 @@ public class Houses_W_AttackBehaviors implements AttackBehavior {
         if(y_copy + 1 < ChessBoard.COLS){
             if(x_copy - 2 >= 0){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1));
+                        !(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy + 1));
                 }
             }
 
             if(x_copy + 2 < ChessBoard.ROWS){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1));
+                        !(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy + 1));
                 }
             }
         }
@@ -140,20 +140,20 @@ public class Houses_W_AttackBehaviors implements AttackBehavior {
         if(y_copy - 1 >= 0){
             if(x_copy - 2 >= 0){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1));
+                        !(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy - 2,y_copy - 1));
                 }
             }
 
             if(x_copy + 2 < ChessBoard.ROWS){
                 if(ChessBoard.hasPiece(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1)) &&
-                        !(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1).getIcon() instanceof WhitePiece)){
-                    attack_able_W_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1));
+                        !(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1).getIcon() instanceof BlackPiece)){
+                    attack_able_B_blocks_temp.add(ChessBoard.getChessBoardElement(x_copy + 2,y_copy - 1));
                 }
             }
         }
 
-        attack_able_W_blocks.addAll(attack_able_W_blocks_temp);
+        attack_able_B_blocks.addAll(attack_able_B_blocks_temp);
 
         /*for (JButton chess_blocks : attack_able_W_blocks_temp){
             ChessBoard.findElement_test(ChessBoard.board,chess_blocks,"house_W_attack");//测试能否找到元素。
@@ -161,13 +161,13 @@ public class Houses_W_AttackBehaviors implements AttackBehavior {
     }
 
     @Override
-    public void scan_B_canAttack() {
+    public void scan_W_canAttack() {
         throw new IllegalArgumentException("This is White Piece attack behavior, can not scan Black Piece can attacked blocks.");
     }
 
     @Override
     public void deletePieces(AbstractChessPiece abstractChessPiece) {
-        BlackPlayer.remove_B_Piece(abstractChessPiece);
+        WhitePlayer.remove_W_Piece(abstractChessPiece);
         ChessBoard.removeChessPiece(abstractChessPiece);
     }
 
