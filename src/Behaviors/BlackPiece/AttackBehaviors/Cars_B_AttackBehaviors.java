@@ -95,6 +95,8 @@ public class Cars_B_AttackBehaviors implements AttackBehavior {
                     !(ChessBoard.getChessBoardElement(x_copy + 1,y).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy+1][y]);
                 break;//在遇到的第一个非白棋子时，则停止检查。
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y])){
+                break;//遇到白棋子时，则停止检查。
             }
         }
 
@@ -103,6 +105,8 @@ public class Cars_B_AttackBehaviors implements AttackBehavior {
                     !(ChessBoard.getChessBoardElement(x,y_copy + 1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy+1]);
                 break;//在遇到的第一个非白棋子时，则停止检查。
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy+1])){
+                break;//遇到白棋子时，则停止检查。
             }
         }
 
@@ -114,6 +118,8 @@ public class Cars_B_AttackBehaviors implements AttackBehavior {
                     !(ChessBoard.getChessBoardElement(x_copy - 1,y).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy-1][y]);
                 break;//在遇到的第一个非白棋子时，则停止检查。
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y])){
+                break;//遇到白棋子时，则停止检查。
             }
         }
 
@@ -122,6 +128,8 @@ public class Cars_B_AttackBehaviors implements AttackBehavior {
                     !(ChessBoard.getChessBoardElement(x,y_copy - 1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy-1]);
                 break;//在遇到的第一个非白棋子时，则停止检查。
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy-1])){
+                break;//遇到白棋子时，则停止检查。
             }
         }
 
