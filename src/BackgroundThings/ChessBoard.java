@@ -29,6 +29,10 @@ public class ChessBoard extends JPanel {
     public static final WhitePiece WHITE_HORSE_B = new WhitePiece("resource/white_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public static final BlackPiece BLACK_HORSE_W = new BlackPiece("resource/black_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
     public static final BlackPiece BLACK_HORSE_B = new BlackPiece("resource/black_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_ELEPHANT_W = new WhitePiece("resource/white_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_ELEPHANT_B = new WhitePiece("resource/white_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_ELEPHANT_W = new BlackPiece("resource/black_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_ELEPHANT_B = new BlackPiece("resource/black_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
 
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
@@ -67,8 +71,9 @@ public class ChessBoard extends JPanel {
         createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
         createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
         createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
-        createChessPiece(ChessBoard.PieceType.Horse,board[2][5],WHITE_HORSE_W);
-        createChessPiece(ChessBoard.PieceType.Horse,board[7][1],BLACK_HORSE_B);
+        createChessPiece(ChessBoard.PieceType.Horse,board[2][5],WHITE_HORSE_W);//test
+        createChessPiece(ChessBoard.PieceType.Horse,board[7][1],BLACK_HORSE_B);//test
+        createChessPiece(ChessBoard.PieceType.Elephant,board[3][2],WHITE_ELEPHANT_W);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -215,6 +220,21 @@ public class ChessBoard extends JPanel {
                     addChessPiece(horse);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(horse);
+                    return;
+                }
+            }
+            case Elephant -> {
+                if (chess_piece instanceof WhitePiece){
+                    Elephant elephant = new Elephant(chess_block,chess_piece);
+                    addChessPiece(elephant);//将创建好的棋子放入数组中统一管理
+                    //将白棋加入白棋子列表中
+                    WhitePlayer.add_W_Piece(elephant);
+                    return;
+                }else if (chess_piece instanceof BlackPiece){
+                    Elephant elephant = new Elephant(chess_block,chess_piece);
+                    addChessPiece(elephant);//将创建好的棋子放入数组中统一管理
+                    //将黑棋子加入黑棋子列表中
+                    BlackPlayer.add_B_Piece(elephant);
                     return;
                 }
             }
@@ -389,7 +409,7 @@ public class ChessBoard extends JPanel {
         WHITE_TURN, BLACK_TURN
     }
     enum PieceType {
-        Soldier, Queen,Car,Horse
+        Soldier, Queen,Car,Horse,Elephant
     }
 
      public enum BackGroundType {
