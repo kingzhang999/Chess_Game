@@ -33,6 +33,10 @@ public class ChessBoard extends JPanel {
     public static final WhitePiece WHITE_ELEPHANT_B = new WhitePiece("resource/white_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public static final BlackPiece BLACK_ELEPHANT_W = new BlackPiece("resource/black_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
     public static final BlackPiece BLACK_ELEPHANT_B = new BlackPiece("resource/black_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_QUEEN_W = new WhitePiece("resource/white_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_QUEEN_B = new WhitePiece("resource/white_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_QUEEN_W = new BlackPiece("resource/black_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_QUEEN_B = new BlackPiece("resource/black_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
 
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
@@ -75,6 +79,8 @@ public class ChessBoard extends JPanel {
         createChessPiece(ChessBoard.PieceType.Horse,board[7][1],BLACK_HORSE_B);//test
         createChessPiece(ChessBoard.PieceType.Elephant,board[3][2],WHITE_ELEPHANT_W);//test
         createChessPiece(ChessBoard.PieceType.Elephant,board[0][7],BLACK_ELEPHANT_W);//test
+        createChessPiece(ChessBoard.PieceType.Queen,board[5][5],WHITE_QUEEN_B);//test
+        createChessPiece(ChessBoard.PieceType.Queen,board[3][1],BLACK_QUEEN_B);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -239,6 +245,21 @@ public class ChessBoard extends JPanel {
                     return;
                 }
             }
+            case Queen -> {
+                if (chess_piece instanceof WhitePiece){
+                    Queen queen = new Queen(chess_block,chess_piece);
+                    addChessPiece(queen);//将创建好的棋子放入数组中统一管理
+                    //将白棋加入白棋子列表中
+                    WhitePlayer.add_W_Piece(queen);
+                    return;
+                }else if (chess_piece instanceof BlackPiece){
+                    Queen queen = new Queen(chess_block,chess_piece);
+                    addChessPiece(queen);//将创建好的棋子放入数组中统一管理
+                    //将黑棋子加入黑棋子列表中
+                    BlackPlayer.add_B_Piece(queen);
+                    return;
+                }
+            }
             default -> throw new IllegalArgumentException("NO SUCH TYPE PIECE");
         }
         throw new IllegalArgumentException("NO SUCH TYPE PIECE");
@@ -270,7 +291,7 @@ public class ChessBoard extends JPanel {
                 AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
 
                 //如果发现此时被选中的棋子不是白棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
-                if (findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
+                if (WhitePlayer.isInWhitePiecesList(thePieceOnTrigger)){
                     //System.out.println("This piece is white piece.");//test
                     //将棋子设为已选择状态。
                     thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
@@ -327,7 +348,7 @@ public class ChessBoard extends JPanel {
                 AbstractChessPiece thePieceOnTrigger = findChessPiece(trigger);
 
                 //如果发现此时被选中的棋子不是黑棋，那么就把当前棋子拒绝加入到ReadyToMove列表中。
-                if(!findPiecesInBlackListOrWhiteList(thePieceOnTrigger)){
+                if(BlackPlayer.isInBlackPieceList(thePieceOnTrigger)){
                     //将棋子设为已选择状态。
                     thePieceOnTrigger.setChoiceState(AbstractChessPiece.ChoiceState.CHOICE_ABLE);
                     BlackPlayer.add_B_ReadyToMove(thePieceOnTrigger);
@@ -386,31 +407,13 @@ public class ChessBoard extends JPanel {
             }
             throw new IllegalArgumentException("This trigger don't have piece.");
         }
-
-        private boolean findPiecesInBlackListOrWhiteList(AbstractChessPiece thePiece) {
-
-            for (AbstractChessPiece chessPiece : WhitePlayer.white_pieces_list) {
-                //System.out.println("W_ChessPiece: "+chessPiece);//test
-                if (chessPiece == thePiece) {
-                    return true;//找到对应棋子后退出循环。
-                }
-            }
-
-            for (AbstractChessPiece chessPiece : BlackPlayer.black_pieces_list) {
-                //System.out.println("B_ChessPiece: "+chessPiece);//test
-                if (chessPiece == thePiece) {
-                    return false;//找到对应棋子后退出循环。
-                }
-            }
-            throw new IllegalArgumentException("This trigger don't have piece.");
-        }
     }
 
     enum GameTurn {
         WHITE_TURN, BLACK_TURN
     }
     enum PieceType {
-        Soldier, Queen,Car,Horse,Elephant
+        Soldier,Queen,Car,Horse,Elephant
     }
 
      public enum BackGroundType {

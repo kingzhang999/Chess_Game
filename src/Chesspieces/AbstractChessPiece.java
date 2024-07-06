@@ -76,6 +76,17 @@ public abstract class AbstractChessPiece {
         return moveBehavior;
     }
 
+    @Override
+    public String toString(){
+        String result = "";
+        if (chess_piece instanceof WhitePiece){
+            result = getClass().getSimpleName()+ "@" + Integer.toHexString(hashCode()) + " (白)";
+        } else if(chess_piece instanceof BlackPiece){
+            result = getClass().getSimpleName()+ "@" + Integer.toHexString(hashCode()) + " (黑)";
+        }
+        return result;
+    }
+
     public enum ChoiceState{
         CHOICE_ABLE,UN_CHOICE
     }

@@ -9,7 +9,10 @@ public class WhitePlayer {
     public static final WhitePlayer whitePlayer = new WhitePlayer();
     public static boolean isInWhitePiecesList(AbstractChessPiece piece) {
         for (AbstractChessPiece p : white_pieces_list) {
+            System.out.println("W_ChessPiece: "+p);//test
+            System.out.println("W_target_Found: "+piece);//test
             if(p == piece){
+                System.out.println("W_Piece_Found: "+p);//test
                 return true;
             }
         }
@@ -24,6 +27,7 @@ public class WhitePlayer {
     public static void remove_W_Piece(AbstractChessPiece piece) {
         for (int i = 0; i < white_pieces_count; i++) {
             if (white_pieces_list[i] == piece) {
+                System.out.println("W_Piece_Removed: "+piece);//test
                 white_pieces_list[i] = null;
                 System.gc();//垃圾回收
                 white_pieces_count--;

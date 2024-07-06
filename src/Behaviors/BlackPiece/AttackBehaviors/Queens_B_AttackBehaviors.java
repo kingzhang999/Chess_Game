@@ -2,27 +2,28 @@ package Behaviors.BlackPiece.AttackBehaviors;
 
 import BackgroundThings.ChessBoard;
 import Behaviors.AttackBehavior;
-import Behaviors.BlackPiece.Movement.Elephants_B_Movement;
+import Behaviors.BlackPiece.Movement.Queens_B_Movement;
 import Chesspieces.AbstractChessPiece;
 import Chesspieces.BlackPiece;
-import Chesspieces.Elephant;
+import Chesspieces.Queen;
 import Chesspieces.WhitePiece;
 import Players.WhitePlayer;
 
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class Elephants_B_AttackBehaviors implements AttackBehavior {
+public class Queens_B_AttackBehaviors implements AttackBehavior {
     private int x;
     private int y;
     private JButton nowPosition;
-    Elephant elephant;
+    Queen queen;
     private final ArrayList<JButton> attack_able_B_blocks = new ArrayList<>();
 
-    public Elephants_B_AttackBehaviors(Elephant elephant){
-        this.elephant = elephant;
+    public Queens_B_AttackBehaviors(Queen queen) {
+        this.queen = queen;
         updateLocation();
     }
+
     @Override
     public boolean attack(JButton being_attacked_chess_block) {
         scan_B_canAttack();//刷新可攻击的位置。
@@ -42,31 +43,31 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
                 realImageIcon = ChessBoard.BLACK;
             }
 
-            ChessBoard.changeChessBoard(x,y,elephant.getChess_block_iconImage());//将车目前待在这儿的方块还原成士兵没来这时的样子。
-            elephant.setChess_block_iconImage(realImageIcon);//将车将要去的方块目前的状况记录下来。
+            ChessBoard.changeChessBoard(x,y,queen.getChess_block_iconImage());//将车目前待在这儿的方块还原成士兵没来这时的样子。
+            queen.setChess_block_iconImage(realImageIcon);//将车将要去的方块目前的状况记录下来。
 
-            for(AbstractChessPiece elephant1 : ChessBoard.all_chess_piece_list){
-                if(elephant1 != null && elephant1.getChess_block() == being_attacked_chess_block){
-                    deletePieces(elephant1);//将要去的方块上的敌方棋子删除。
+            for(AbstractChessPiece queen1 : ChessBoard.all_chess_piece_list){
+                if(queen1 != null && queen1.getChess_block() == being_attacked_chess_block){
+                    deletePieces(queen1);//将要去的方块上的敌方棋子删除。
                     //System.out.println("delete: "+soldier1);
                 }
             }
 
             //将棋子所绑定的格子替换为目标格子。
-            elephant.setChess_block(being_attacked_chess_block);
+            queen.setChess_block(being_attacked_chess_block);
 
             //System.out.println("targetImageIcon instanceof WhiteBackGround: "+(targetImageIcon instanceof WhiteBackGround));
             if(targetImageIcon.getBackground() == ChessBoard.BackGroundType.WhiteBack){//如要去的格子是白格子，则把要去的格子的背景换成相应棋子在白格子下的背景。
 
-                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_ELEPHANT_W);
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_QUEEN_W);
 
             }else {//不然则把要去的格子的背景换成相应棋子在黑格子下的背景。
 
-                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_ELEPHANT_B);
+                ChessBoard.changeChessBoard(x_future,y_future,ChessBoard.BLACK_QUEEN_B);
 
             }
             ChessBoard.getChessBoardElement(x_future,y_future).repaint();//重绘移动完后格子的贴图。
-            ((Elephants_B_Movement)elephant.getMoveBehavior()).updateLocation();//更新移动行为中棋子的所在位置。
+            ((Queens_B_Movement)queen.getMoveBehavior()).updateLocation();//更新移动行为中棋子的所在位置。
             scan_B_canAttack();//刷新可攻击的位置。
             return true;
         }
@@ -79,19 +80,69 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
         attack_able_B_blocks.clear();//清空之前的可攻击位置
         updateLocation();//更新位置信息
 
-        int x_copy = x;//复制x的值，以防止在循环中修改原值。
-        int y_copy = y;//复制y的值，以防止在循环中修改原值。
+        int x_copy = x;
+        int y_copy = y;
 
-        ArrayList<JButton> attack_able_B_blocks_temp = new ArrayList<>();
+        //System.out.println("x_copy: "+x_copy);//test
+        ArrayList<JButton> attack_able_B_blocks_temp = new ArrayList<>();//用于临时存储可攻击的位置
+        //检查下方的格子。
+        for (;x_copy + 1 < ChessBoard.ROWS;x_copy++){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy加一以检查下一个格子。
+            if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y]) &&
+                    !(ChessBoard.getChessBoardElement(x_copy + 1,y).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x_copy+1][y]);
+                break;//在找到第一个非黑棋子时，停止检查
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y])){
+                break;//在找到第一个黑棋子时，停止检查。
+            }
+        }
+
+        //检查右方的格子。
+        for (;y_copy + 1 < ChessBoard.COLS;y_copy++){
+            if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy+1]) &&
+                    !(ChessBoard.getChessBoardElement(x,y_copy + 1).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy+1]);
+                break;//在找到第一个非黑棋子时，停止检查
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy+1])){
+                break;//在找到第一个黑棋子时，停止检查。
+            }
+        }
+
+        x_copy = x;//还原x_copy的值。
+        y_copy = y;//还原y_copy的值。
+
+        //检查上方的格子。
+        for (;x_copy > 0;x_copy--){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy减一以检查下一个格子。
+            if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y]) &&
+                    !(ChessBoard.getChessBoardElement(x_copy - 1,y).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x_copy-1][y]);
+                break;//在找到第一个非黑棋子时，停止检查
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y])){
+                break;//在找到第一个黑棋子时，停止检查。
+            }
+        }
+
+        //检查左方的格子。
+        for (;y_copy > 0;y_copy--){
+            if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy-1]) &&
+                    !(ChessBoard.getChessBoardElement(x,y_copy - 1).getIcon() instanceof BlackPiece)){
+                attack_able_B_blocks_temp.add(ChessBoard.board[x][y_copy-1]);
+                break;//在找到第一个非黑棋子时，停止检查
+            }else if (ChessBoard.hasPiece(ChessBoard.board[x][y_copy-1])){
+                break;//在找到第一个黑棋子时，停止检查。
+            }
+        }
+
+        x_copy = x;//还原x_copy的值。
+        y_copy = y;//还原y_copy的值。
 
         //检查左上方的格子。
         for (;x_copy - 1 >= 0 && y_copy - 1 >= 0;x_copy--,y_copy--){//把x_copy放在这里的原因是每一次检查完之后，无论格子是否符合要求，都要把x_copy加一以检查下一个格子。
             if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y_copy-1]) &&
                     !(ChessBoard.getChessBoardElement(x_copy-1,y_copy-1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy-1][y_copy-1]);
-                break;//在找到第一个非白棋子时，停止检查。
+                break;//在找到第一个非黑棋子时，停止检查
             }else if(ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y_copy-1])){
-                break;//在找到第一个白棋子时，停止检查。
+                break;//在找到第一个黑棋子时，停止检查。
             }
         }
 
@@ -103,9 +154,9 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
             if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y_copy+1]) &&
                     !(ChessBoard.getChessBoardElement(x_copy+1,y_copy+1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy+1][y_copy+1]);
-                break;//在找到第一个非白棋子时，停止检查
+                break;//在找到第一个非黑棋子时，停止检查
             }else if(ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y_copy+1])){
-                break;//在找到第一个白棋子时，停止检查。
+                break;//在找到第一个黑棋子时，停止检查。
             }
         }
 
@@ -117,9 +168,9 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
             if (ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y_copy+1]) &&
                     !(ChessBoard.getChessBoardElement(x_copy-1,y_copy+1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy-1][y_copy+1]);
-                break;//在找到第一个非白棋子时，停止检查
+                break;//在找到第一个非黑棋子时，停止检查
             }else if(ChessBoard.hasPiece(ChessBoard.board[x_copy-1][y_copy+1])){
-                break;//在找到第一个白棋子时，停止检查。
+                break;//在找到第一个黑棋子时，停止检查。
             }
         }
 
@@ -131,14 +182,14 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
             if (ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y_copy-1]) &&
                     !(ChessBoard.getChessBoardElement(x_copy+1,y_copy-1).getIcon() instanceof BlackPiece)){
                 attack_able_B_blocks_temp.add(ChessBoard.board[x_copy+1][y_copy-1]);
-                break;//在找到第一个非白棋子时，停止检查
+                break;//在找到第一个非黑棋子时，停止检查
             }else if(ChessBoard.hasPiece(ChessBoard.board[x_copy+1][y_copy-1])){
-                break;//在找到第一个白棋子时，停止检查。
+                break;//在找到第一个黑棋子时，停止检查。
             }
         }
 
-        /*for (JButton chess_blocks : attack_able_B_blocks_temp){
-            ChessBoard.findElement_test(ChessBoard.board,chess_blocks,"Elephant_W_attack");//测试能否找到元素。
+        /*for (JButton chess_blocks : attack_able_W_blocks_temp){
+            ChessBoard.findElement_test(ChessBoard.board,chess_blocks,"car_W_attack");//测试能否找到元素。
         }*/
 
         attack_able_B_blocks.addAll(attack_able_B_blocks_temp);
@@ -146,7 +197,7 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
 
     @Override
     public void scan_W_canAttack() {
-        throw new IllegalArgumentException("This is White movement behavior, can not scan black piece can walked blocks.");
+        throw new IllegalArgumentException("This is White Piece attack behavior, can not scan Black Piece can attacked blocks.");
     }
 
     @Override
@@ -157,7 +208,7 @@ public class Elephants_B_AttackBehaviors implements AttackBehavior {
 
     public void updateLocation(){
         //实时获取现在所处在的格子和位置。
-        nowPosition = elephant.getChess_block();
+        nowPosition = queen.getChess_block();
         x = ChessBoard.findElement(ChessBoard.board,nowPosition)[0];
         y = ChessBoard.findElement(ChessBoard.board,nowPosition)[1];
     }
