@@ -172,7 +172,7 @@ public class ChessBoard extends JPanel {
     }
 
     public static void removeChessPiece(AbstractChessPiece piece){
-        for (int i = 0; i < chess_piece_list_top; i++) {
+        for (int i = 0; i < CHESS_PIECE_NUMBER; i++) {
             if (all_chess_piece_list[i] == piece) {
                 all_chess_piece_list[i] = null;
                 System.gc();//垃圾回收
