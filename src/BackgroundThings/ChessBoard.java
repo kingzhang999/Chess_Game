@@ -37,6 +37,10 @@ public class ChessBoard extends JPanel {
     public static final WhitePiece WHITE_QUEEN_B = new WhitePiece("resource/white_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
     public static final BlackPiece BLACK_QUEEN_W = new BlackPiece("resource/black_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
     public static final BlackPiece BLACK_QUEEN_B = new BlackPiece("resource/black_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_KING_W = new WhitePiece("resource/white_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final WhitePiece WHITE_KING_B = new WhitePiece("resource/white_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final BlackPiece BLACK_KING_W = new BlackPiece("resource/black_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
+    public static final BlackPiece BLACK_KING_B = new BlackPiece("resource/black_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
 
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
@@ -70,7 +74,6 @@ public class ChessBoard extends JPanel {
             }
         }
         createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
-        //firstSoldier.move();
         createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
         createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
         createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
@@ -81,6 +84,8 @@ public class ChessBoard extends JPanel {
         createChessPiece(ChessBoard.PieceType.Elephant,board[0][7],BLACK_ELEPHANT_W);//test
         createChessPiece(ChessBoard.PieceType.Queen,board[5][5],WHITE_QUEEN_B);//test
         createChessPiece(ChessBoard.PieceType.Queen,board[3][1],BLACK_QUEEN_B);//test
+        createChessPiece(ChessBoard.PieceType.King,board[6][6],WHITE_KING_B);//test
+        createChessPiece(ChessBoard.PieceType.King,board[1][1],BLACK_KING_B);//test
     }
 
     public static ChessBoard getChessBoard(){
@@ -173,6 +178,8 @@ public class ChessBoard extends JPanel {
 
     public static void removeChessPiece(AbstractChessPiece piece){
         for (int i = 0; i < CHESS_PIECE_NUMBER; i++) {
+            //在for循环中使用CHESS_PIECE_NUMBER作为循环次数是为了避免删除了一个在数组靠后位置的元素时，
+            //chess_piece_list_top自动减一，如果后面需要删除更靠后的元素时，无法循环到那个元素。以至于导致错误。
             if (all_chess_piece_list[i] == piece) {
                 all_chess_piece_list[i] = null;
                 System.gc();//垃圾回收
@@ -257,6 +264,21 @@ public class ChessBoard extends JPanel {
                     addChessPiece(queen);//将创建好的棋子放入数组中统一管理
                     //将黑棋子加入黑棋子列表中
                     BlackPlayer.add_B_Piece(queen);
+                    return;
+                }
+            }
+            case King -> {
+                if (chess_piece instanceof WhitePiece){
+                    King king = new King(chess_block,chess_piece);
+                    addChessPiece(king);//将创建好的棋子放入数组中统一管理
+                    //将白棋加入白棋子列表中
+                    WhitePlayer.add_W_Piece(king);
+                    return;
+                }else if (chess_piece instanceof BlackPiece){
+                    King king = new King(chess_block,chess_piece);
+                    addChessPiece(king);//将创建好的棋子放入数组中统一管理
+                    //将黑棋子加入黑棋子列表中
+                    BlackPlayer.add_B_Piece(king);
                     return;
                 }
             }
@@ -413,7 +435,7 @@ public class ChessBoard extends JPanel {
         WHITE_TURN, BLACK_TURN
     }
     enum PieceType {
-        Soldier,Queen,Car,Horse,Elephant
+        Soldier,Queen,Car,Horse,Elephant,King
     }
 
      public enum BackGroundType {

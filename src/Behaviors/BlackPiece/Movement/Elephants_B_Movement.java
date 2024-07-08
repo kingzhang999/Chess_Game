@@ -147,7 +147,7 @@ public class Elephants_B_Movement implements MoveBehavior {
             //每次执行移动操作的时候，都需要重新判断可以移动的格子，以防上一次遇到不可移动的格子之后，将棋子卡在原地无法行动。
             chess_B_BlockList_moment_elephant.clear();//在每一次排查完合适的格子之后，删除原来的列表。以防止之前过时的格子还能生效。
             chess_B_BlockList_moment_elephant.addAll(List.of(scan_B_ChessBlock_canWalk()));//更新白棋可以移动的格子列表。
-            //elephant.getAttackBehavior().scan_B_canAttack();//更新白棋可以攻击的格子列表。
+            elephant.getAttackBehavior().scan_B_canAttack();//更新白棋可以攻击的格子列表。
         }
     }
 }
