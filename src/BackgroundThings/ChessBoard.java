@@ -8,6 +8,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class ChessBoard extends JPanel {
     public static final int ROWS = 8;
@@ -73,19 +80,166 @@ public class ChessBoard extends JPanel {
                 add(board[cols][rows]);
             }
         }
-        createChessPiece(PieceType.Soldier,board[1][2],WHITE_SOLDIER_W);//test
-        createChessPiece(PieceType.Soldier,board[6][1],BLACK_SOLDIER_W);//test
-        createChessPiece(PieceType.Car,board[3][4],WHITE_CAR_W);//test
-        createChessPiece(PieceType.Car,board[5][3],BLACK_CAR_B);//test
-        createChessPiece(PieceType.Soldier,board[4][7],BLACK_SOLDIER_W);//test
-        createChessPiece(ChessBoard.PieceType.Horse,board[2][5],WHITE_HORSE_W);//test
-        createChessPiece(ChessBoard.PieceType.Horse,board[7][1],BLACK_HORSE_B);//test
-        createChessPiece(ChessBoard.PieceType.Elephant,board[3][2],WHITE_ELEPHANT_W);//test
-        createChessPiece(ChessBoard.PieceType.Elephant,board[0][7],BLACK_ELEPHANT_W);//test
-        createChessPiece(ChessBoard.PieceType.Queen,board[5][5],WHITE_QUEEN_B);//test
-        createChessPiece(ChessBoard.PieceType.Queen,board[3][1],BLACK_QUEEN_B);//test
-        createChessPiece(ChessBoard.PieceType.King,board[6][6],WHITE_KING_B);//test
-        createChessPiece(ChessBoard.PieceType.King,board[1][1],BLACK_KING_B);//test
+        //初始化棋子
+        initializeChessPieces();
+    }
+
+    public void initializeChessPieces(){
+        int x = 0;
+        int y = 0;
+        for (String line : Objects.requireNonNull(readManual(new File("resource/manuals/manual.txt")))){
+            switch (line) {
+                case "0" -> {
+                    decideToPutWhatPiece(PieceType.Car, x, y, WHITE_CAR_W, WHITE_CAR_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "1" -> {
+                    decideToPutWhatPiece(PieceType.Horse, x, y, WHITE_HORSE_W, WHITE_HORSE_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "2" -> {
+                    decideToPutWhatPiece(PieceType.Elephant, x, y, WHITE_ELEPHANT_W, WHITE_ELEPHANT_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "3" -> {
+                    decideToPutWhatPiece(PieceType.Queen, x, y, WHITE_QUEEN_W, WHITE_QUEEN_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "4" -> {
+                    decideToPutWhatPiece(PieceType.King, x, y, WHITE_KING_W, WHITE_KING_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "5" -> {
+                    decideToPutWhatPiece(PieceType.Soldier, x, y, WHITE_SOLDIER_W, WHITE_SOLDIER_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "6" -> {
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "7" -> {
+                    decideToPutWhatPiece(PieceType.Soldier, x, y, BLACK_SOLDIER_W, BLACK_SOLDIER_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "8" -> {
+                    decideToPutWhatPiece(PieceType.Car, x, y, BLACK_CAR_W, BLACK_CAR_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "9" -> {
+                    decideToPutWhatPiece(PieceType.Horse, x, y, BLACK_HORSE_W, BLACK_HORSE_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "10" -> {
+                    decideToPutWhatPiece(PieceType.Elephant, x, y, BLACK_ELEPHANT_W, BLACK_ELEPHANT_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "11" -> {
+                    decideToPutWhatPiece(PieceType.Queen, x, y, BLACK_QUEEN_W, BLACK_QUEEN_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+                case "12" -> {
+                    decideToPutWhatPiece(PieceType.King, x, y, BLACK_KING_W, BLACK_KING_B);
+                    if (y + 1 >= COLS) {
+                        x += 1;
+                        y = 0;
+                    } else {
+                        y += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    public void decideToPutWhatPiece(PieceType pieceType,int x_copy, int y_copy,ImageIcon chess_face_w,ImageIcon chess_face_b){
+        if(x_copy % 2 == 0){
+            if(y_copy % 2 == 0){
+                createChessPiece(pieceType,board[x_copy][y_copy],chess_face_b);
+            }else {
+                createChessPiece(pieceType,board[x_copy][y_copy],chess_face_w);
+            }
+        }else {
+            if(y_copy % 2 == 0){
+                createChessPiece(pieceType,board[x_copy][y_copy],chess_face_w);
+            }else {
+                createChessPiece(pieceType,board[x_copy][y_copy],chess_face_b);
+            }
+        }
+    }
+
+    private ArrayList<String> readManual(File file){
+        try(BufferedReader br = new BufferedReader(new FileReader(file))){
+            ArrayList<String> str = new ArrayList<>();
+            String line;
+            while((line = br.readLine())!= null){
+                //System.out.println("Reading line: "+br.readLine());
+                str.addAll(List.of(line.split(",")));
+
+            }
+            return str;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static ChessBoard getChessBoard(){
