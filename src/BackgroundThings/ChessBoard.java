@@ -12,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,30 +23,30 @@ public class ChessBoard extends JPanel {
     private static int chess_piece_list_top = 0;
     public static final ImageIcon WHITE = new ImageIcon("resource/white.jpg");
     public static final ImageIcon BLACK = new ImageIcon("resource/black.jpg");
-    public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final WhitePiece WHITE_CAR_W = new WhitePiece("resource/white_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_CAR_B = new WhitePiece("resource/white_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_CAR_W = new BlackPiece("resource/black_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_CAR_B = new BlackPiece("resource/black_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final WhitePiece WHITE_HORSE_W = new WhitePiece("resource/white_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_HORSE_B = new WhitePiece("resource/white_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_HORSE_W = new BlackPiece("resource/black_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_HORSE_B = new BlackPiece("resource/black_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final WhitePiece WHITE_ELEPHANT_W = new WhitePiece("resource/white_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_ELEPHANT_B = new WhitePiece("resource/white_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_ELEPHANT_W = new BlackPiece("resource/black_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_ELEPHANT_B = new BlackPiece("resource/black_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final WhitePiece WHITE_QUEEN_W = new WhitePiece("resource/white_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_QUEEN_B = new WhitePiece("resource/white_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_QUEEN_W = new BlackPiece("resource/black_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_QUEEN_B = new BlackPiece("resource/black_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final WhitePiece WHITE_KING_W = new WhitePiece("resource/white_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final WhitePiece WHITE_KING_B = new WhitePiece("resource/white_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
-    public static final BlackPiece BLACK_KING_W = new BlackPiece("resource/black_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack);
-    public static final BlackPiece BLACK_KING_B = new BlackPiece("resource/black_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack);
+    public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Soldier);
+    public static final WhitePiece WHITE_SOLDIER_B = new WhitePiece("resource/white_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Soldier);
+    public static final BlackPiece BLACK_SOLDIER_W = new BlackPiece("resource/black_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Soldier);
+    public static final BlackPiece BLACK_SOLDIER_B = new BlackPiece("resource/black_soldier_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Soldier);
+    public static final WhitePiece WHITE_CAR_W = new WhitePiece("resource/white_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Car);
+    public static final WhitePiece WHITE_CAR_B = new WhitePiece("resource/white_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Car);
+    public static final BlackPiece BLACK_CAR_W = new BlackPiece("resource/black_car_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Car);
+    public static final BlackPiece BLACK_CAR_B = new BlackPiece("resource/black_car_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Car);
+    public static final WhitePiece WHITE_HORSE_W = new WhitePiece("resource/white_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Horse);
+    public static final WhitePiece WHITE_HORSE_B = new WhitePiece("resource/white_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Horse);
+    public static final BlackPiece BLACK_HORSE_W = new BlackPiece("resource/black_horse_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Horse);
+    public static final BlackPiece BLACK_HORSE_B = new BlackPiece("resource/black_horse_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Horse);
+    public static final WhitePiece WHITE_ELEPHANT_W = new WhitePiece("resource/white_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Elephant);
+    public static final WhitePiece WHITE_ELEPHANT_B = new WhitePiece("resource/white_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Elephant);
+    public static final BlackPiece BLACK_ELEPHANT_W = new BlackPiece("resource/black_elephant_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Elephant);
+    public static final BlackPiece BLACK_ELEPHANT_B = new BlackPiece("resource/black_elephant_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Elephant);
+    public static final WhitePiece WHITE_QUEEN_W = new WhitePiece("resource/white_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Queen);
+    public static final WhitePiece WHITE_QUEEN_B = new WhitePiece("resource/white_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Queen);
+    public static final BlackPiece BLACK_QUEEN_W = new BlackPiece("resource/black_queen_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Queen);
+    public static final BlackPiece BLACK_QUEEN_B = new BlackPiece("resource/black_queen_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.Queen);
+    public static final WhitePiece WHITE_KING_W = new WhitePiece("resource/white_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.King);
+    public static final WhitePiece WHITE_KING_B = new WhitePiece("resource/white_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.King);
+    public static final BlackPiece BLACK_KING_W = new BlackPiece("resource/black_king_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.King);
+    public static final BlackPiece BLACK_KING_B = new BlackPiece("resource/black_king_in_black.jpg",ChessBoard.BackGroundType.BlackBack,ChessBoard.PieceType.King);
 
     public volatile static ChessBoard chessBoard = null;
     public static GameTurn gameTurn = GameTurn.WHITE_TURN;
@@ -588,7 +587,7 @@ public class ChessBoard extends JPanel {
     enum GameTurn {
         WHITE_TURN, BLACK_TURN
     }
-    enum PieceType {
+    public enum PieceType {
         Soldier,Queen,Car,Horse,Elephant,King
     }
 
