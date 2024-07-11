@@ -1,6 +1,8 @@
 import BackgroundThings.ChessBoard;
 import Chesspieces.BlackPiece;
 import Chesspieces.WhitePiece;
+import Players.BlackPlayer;
+import Players.WhitePlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,20 +18,20 @@ import java.util.ArrayList;
 import static BackgroundThings.ChessBoard.*;
 
 public class GameScreen extends JFrame{
-    public GameScreen(File startGameFile){
+    public GameScreen(){
         setTitle("Chess Board");
         setLayout(new BorderLayout());
         setSize(COLS * ChessBoard.CELL_SIZE, ROWS * ChessBoard.CELL_SIZE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        initializeScreen(startGameFile);//棋盘初始化必须放在setVisible前面，否则棋盘无法加载。
+        initializeScreen();//棋盘初始化必须放在setVisible前面，否则棋盘无法加载。
 
         setVisible(true);
     }
 
-    private void initializeScreen(File transfer_file){
-        getContentPane().add(ChessBoard.getChessBoard(transfer_file),BorderLayout.CENTER);
+    private void initializeScreen(){
+        getContentPane().add(ChessBoard.getChessBoard(),BorderLayout.CENTER);
         setJMenuBar(createMenuBar());//没想好怎么写菜单栏，先注释掉
     }
 
@@ -37,6 +39,7 @@ public class GameScreen extends JFrame{
         JMenuBar menuBar;
         JMenu menu;
         JMenuItem menuItem;
+        JMenuItem menuItem2;
 
         //Create the menu bar.
         menuBar = new JMenuBar();
@@ -51,15 +54,16 @@ public class GameScreen extends JFrame{
         menuItem.addActionListener(new SaveGame());
         menu.add(menuItem);
 
+        //Add a menu item.
+        menuItem2 = new JMenuItem("load", KeyEvent.VK_O);
+        menuItem2.addActionListener(new LoadGame());
+        menu.add(menuItem2);
+
         return menuBar;
     }
 
     public static void main(String[] args) {
-        if(args.length == 0){
-            SwingUtilities.invokeLater(() -> new GameScreen(DEFAULT_MANUAL_FILE));
-        }else{
-            SwingUtilities.invokeLater(() -> new GameScreen(new File(args[0])));
-        }
+            SwingUtilities.invokeLater(GameScreen::new);
     }
 
     private static class SaveGame implements ActionListener {
@@ -117,5 +121,26 @@ public class GameScreen extends JFrame{
             }
         }
 
+    }
+
+    private static class LoadGame implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //打开文件选取窗口
+            JFileChooser fileChooser = new JFileChooser("resource/manuals");
+            fileChooser.showOpenDialog(ChessBoard.getChessBoard());
+
+            //清除之前的棋子
+            ChessBoard.getChessBoard().removeAllChessPiecesAndBlocks();
+            WhitePlayer.removeAll_W_ChessPieces();
+            BlackPlayer.removeAll_B_ChessPieces();
+            ChessBoard.getChessBoard().removeAll();
+
+            //加载新棋子
+            ChessBoard.getChessBoard().initializeBoard(fileChooser.getSelectedFile());
+            ChessBoard.getChessBoard().revalidate();
+            ChessBoard.getChessBoard().repaint();
+        }
     }
 }

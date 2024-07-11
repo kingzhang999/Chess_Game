@@ -54,11 +54,11 @@ public class ChessBoard extends JPanel {
     public static JButton[][] board;
     public static AbstractChessPiece[] all_chess_piece_list;
 
-    private ChessBoard(File file) {
+    private ChessBoard() {
         setLayout(new GridLayout(COLS,ROWS));
         board = new JButton[ROWS][COLS];
         all_chess_piece_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
-        initializeBoard(file);
+        initializeBoard(DEFAULT_MANUAL_FILE);
     }
 
     public void initializeBoard(File file) {
@@ -243,11 +243,11 @@ public class ChessBoard extends JPanel {
         return null;
     }
 
-    public static ChessBoard getChessBoard(File manualFile){
+    public static ChessBoard getChessBoard(){
         if(chessBoard == null){
             synchronized (ChessBoard.class){
                 if(chessBoard == null){
-                    chessBoard = new ChessBoard(manualFile);
+                    chessBoard = new ChessBoard();
                 }
             }
         }
@@ -442,7 +442,7 @@ public class ChessBoard extends JPanel {
         throw new IllegalArgumentException("NO SUCH TYPE PIECE");
     }
 
-    /*public void removeAllChessPiecesAndBlocks() {
+    public void removeAllChessPiecesAndBlocks() {
         for(int i = 0; i < CHESS_PIECE_NUMBER; i++){
             all_chess_piece_list[i] = null;
             System.gc();
@@ -454,7 +454,7 @@ public class ChessBoard extends JPanel {
                 board[i][j] = null;
             }
         }
-    }*///此方法暂时废弃
+    }//此方法暂时废弃
 
     class ClickButtonEvent implements ActionListener {
         @Override
