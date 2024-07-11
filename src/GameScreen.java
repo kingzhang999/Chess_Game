@@ -13,21 +13,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static BackgroundThings.ChessBoard.*;
+
 public class GameScreen extends JFrame{
-    public GameScreen(){
+    public GameScreen(File startGameFile){
         setTitle("Chess Board");
         setLayout(new BorderLayout());
-        setSize(ChessBoard.COLS * ChessBoard.CELL_SIZE, ChessBoard.ROWS * ChessBoard.CELL_SIZE);
+        setSize(COLS * ChessBoard.CELL_SIZE, ROWS * ChessBoard.CELL_SIZE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        initializeScreen();//棋盘初始化必须放在setVisible前面，否则棋盘无法加载。
+        initializeScreen(startGameFile);//棋盘初始化必须放在setVisible前面，否则棋盘无法加载。
 
         setVisible(true);
     }
 
-    private void initializeScreen(){
-        getContentPane().add(ChessBoard.getChessBoard(),BorderLayout.CENTER);
+    private void initializeScreen(File transfer_file){
+        getContentPane().add(ChessBoard.getChessBoard(transfer_file),BorderLayout.CENTER);
         setJMenuBar(createMenuBar());//没想好怎么写菜单栏，先注释掉
     }
 
@@ -53,15 +55,19 @@ public class GameScreen extends JFrame{
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameScreen::new);
+        if(args.length == 0){
+            SwingUtilities.invokeLater(() -> new GameScreen(DEFAULT_MANUAL_FILE));
+        }else{
+            SwingUtilities.invokeLater(() -> new GameScreen(new File(args[0])));
+        }
     }
 
-    private class SaveGame implements ActionListener {
+    private static class SaveGame implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser("resource/manuals");
-            fileChooser.showSaveDialog(ChessBoard.getChessBoard());
+            fileChooser.showSaveDialog(ChessBoard.chessBoard);
             saveFile(fileChooser.getSelectedFile());
         }
 

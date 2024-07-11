@@ -46,4 +46,12 @@ public class WhitePlayer {
     public static AbstractChessPiece getNext_W_ReadyToMove() {
         return w_readyToMove.pop();
     }
+
+    /*public static void removeAll_W_ChessPieces() {
+        for(int i = 0; i < CHESS_PIECE_NUMBER; i++){
+            white_pieces_list[i] = null;
+            System.gc();
+            white_pieces_count = 0;
+        }
+    }*///此方法暂时废弃
 }

@@ -46,4 +46,12 @@ public class BlackPlayer {
     public static AbstractChessPiece getNext_B_ReadyToMove(){
         return b_readyToMove.pop();
     }
+
+    /*public static void removeAll_B_ChessPieces() {
+        for(int i = 0; i < CHESS_PIECE_NUMBER; i++){
+            black_pieces_list[i] = null;
+            System.gc();
+            black_pieces_count = 0;
+        }
+    }*///此方法暂时废弃
 }

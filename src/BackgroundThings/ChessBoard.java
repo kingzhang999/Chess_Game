@@ -21,6 +21,7 @@ public class ChessBoard extends JPanel {
     public static final int CELL_SIZE = 50;
     public static final int CHESS_PIECE_NUMBER = 32;
     private static int chess_piece_list_top = 0;
+    public static final File DEFAULT_MANUAL_FILE = new File("resource/manuals/manual.txt");
     public static final ImageIcon WHITE = new ImageIcon("resource/white.jpg");
     public static final ImageIcon BLACK = new ImageIcon("resource/black.jpg");
     public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Soldier);
@@ -53,14 +54,15 @@ public class ChessBoard extends JPanel {
     public static JButton[][] board;
     public static AbstractChessPiece[] all_chess_piece_list;
 
-    private ChessBoard() {
+    private ChessBoard(File file) {
         setLayout(new GridLayout(COLS,ROWS));
         board = new JButton[ROWS][COLS];
         all_chess_piece_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
-        initializeBoard();
+        initializeBoard(file);
     }
 
-    private void initializeBoard() {
+    public void initializeBoard(File file) {
+
         for (int cols=0;cols<COLS;cols++){
             for (int rows=0;rows<ROWS;rows++){
                 if (cols % 2 == 0){
@@ -80,13 +82,13 @@ public class ChessBoard extends JPanel {
             }
         }
         //初始化棋子
-        initializeChessPieces();
+        initializeChessPieces(file);
     }
 
-    public void initializeChessPieces(){
+    private void initializeChessPieces(File file){
         int x = 0;
         int y = 0;
-        for (String line : Objects.requireNonNull(readManual(new File("resource/manuals/manual.txt")))){
+        for (String line : Objects.requireNonNull(readManual(file))){
             switch (line) {
                 case "0" -> {
                     decideToPutWhatPiece(PieceType.Car, x, y, WHITE_CAR_W, WHITE_CAR_B);
@@ -208,7 +210,7 @@ public class ChessBoard extends JPanel {
         }
     }
 
-    public void decideToPutWhatPiece(PieceType pieceType,int x_copy, int y_copy,ImageIcon chess_face_w,ImageIcon chess_face_b){
+    private void decideToPutWhatPiece(PieceType pieceType,int x_copy, int y_copy,ImageIcon chess_face_w,ImageIcon chess_face_b){
         if(x_copy % 2 == 0){
             if(y_copy % 2 == 0){
                 createChessPiece(pieceType,board[x_copy][y_copy],chess_face_b);
@@ -241,11 +243,11 @@ public class ChessBoard extends JPanel {
         return null;
     }
 
-    public static ChessBoard getChessBoard(){
+    public static ChessBoard getChessBoard(File manualFile){
         if(chessBoard == null){
             synchronized (ChessBoard.class){
                 if(chessBoard == null){
-                    chessBoard = new ChessBoard();
+                    chessBoard = new ChessBoard(manualFile);
                 }
             }
         }
@@ -439,6 +441,20 @@ public class ChessBoard extends JPanel {
         }
         throw new IllegalArgumentException("NO SUCH TYPE PIECE");
     }
+
+    /*public void removeAllChessPiecesAndBlocks() {
+        for(int i = 0; i < CHESS_PIECE_NUMBER; i++){
+            all_chess_piece_list[i] = null;
+            System.gc();
+            chess_piece_list_top = 0;
+        }
+
+        for(int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLS; j++){
+                board[i][j] = null;
+            }
+        }
+    }*///此方法暂时废弃
 
     class ClickButtonEvent implements ActionListener {
         @Override
