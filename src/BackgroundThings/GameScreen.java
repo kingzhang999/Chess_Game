@@ -1,4 +1,5 @@
-import BackgroundThings.ChessBoard;
+package BackgroundThings;
+
 import Chesspieces.BlackPiece;
 import Chesspieces.WhitePiece;
 import Players.BlackPlayer;
@@ -13,15 +14,20 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import static BackgroundThings.ChessBoard.*;
+import static BackgroundThings.ChessBoard.COLS;
+import static BackgroundThings.ChessBoard.ROWS;
 
 public class GameScreen extends JFrame{
+
+    private static JTextArea notice_board;
     public GameScreen(){
         setTitle("Chess Board");
         setLayout(new BorderLayout());
-        setSize(COLS * ChessBoard.CELL_SIZE, ROWS * ChessBoard.CELL_SIZE);
+        setSize(COLS * ChessBoard.CELL_SIZE+180, ROWS * ChessBoard.CELL_SIZE+60);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -32,7 +38,8 @@ public class GameScreen extends JFrame{
 
     private void initializeScreen(){
         getContentPane().add(ChessBoard.getChessBoard(),BorderLayout.CENTER);
-        setJMenuBar(createMenuBar());//没想好怎么写菜单栏，先注释掉
+        setJMenuBar(createMenuBar());
+        getContentPane().add(createEventPanel(), BorderLayout.WEST);
     }
 
     public JMenuBar createMenuBar() {
@@ -62,8 +69,37 @@ public class GameScreen extends JFrame{
         return menuBar;
     }
 
+    public JScrollPane createEventPanel() {
+        notice_board = new JTextArea(10,14);
+        JScrollPane event_scroll_pane = new JScrollPane(notice_board);
+        //设置文本框不可编辑和自动换行
+        notice_board.setEditable(false);
+        notice_board.setLineWrap(true);
+        notice_board.setWrapStyleWord(true);
+
+        //设置滚动面板
+        event_scroll_pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        event_scroll_pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        return event_scroll_pane;
+    }
+
+    public static void addNotice(String notice,Font font){
+        // 获取当前日期和时间
+        LocalDateTime now = LocalDateTime.now();
+        // 创建一个日期时间格式器
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");
+        // 格式化当前日期和时间
+        String time = now.format(formatter);
+        notice_board.setFont(font);
+        notice_board.append(time+": \n");
+        notice_board.append(notice);
+        //将字体恢复成默认字体。
+        notice_board.setFont(null);
+    }
+
     public static void main(String[] args) {
-            SwingUtilities.invokeLater(GameScreen::new);
+        SwingUtilities.invokeLater(GameScreen::new);
     }
 
     private static class SaveGame implements ActionListener {
@@ -72,7 +108,10 @@ public class GameScreen extends JFrame{
         public void actionPerformed(ActionEvent e) {
             JFileChooser fileChooser = new JFileChooser("resource/manuals");
             fileChooser.showSaveDialog(ChessBoard.chessBoard);
-            saveFile(fileChooser.getSelectedFile());
+            File files = fileChooser.getSelectedFile();
+            saveFile(files);
+            //打印通知
+            addNotice("Save game %s okay!\n".formatted(files.getName()),null);
         }
 
         private void saveFile(File file) {
@@ -138,9 +177,12 @@ public class GameScreen extends JFrame{
             ChessBoard.getChessBoard().removeAll();
 
             //加载新棋子
-            ChessBoard.getChessBoard().initializeBoard(fileChooser.getSelectedFile());
+            File manual = fileChooser.getSelectedFile();
+            ChessBoard.getChessBoard().initializeBoard(manual);
             ChessBoard.getChessBoard().revalidate();
             ChessBoard.getChessBoard().repaint();
+            //打印通知
+            addNotice("Load game %s okay!\n".formatted(manual.getName()),null);
         }
     }
 }

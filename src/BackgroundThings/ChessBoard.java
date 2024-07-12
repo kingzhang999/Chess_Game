@@ -22,6 +22,7 @@ public class ChessBoard extends JPanel {
     public static final int CHESS_PIECE_NUMBER = 32;
     private static int chess_piece_list_top = 0;
     public static final File DEFAULT_MANUAL_FILE = new File("resource/manuals/manual.txt");
+    public static final Font WINNER_FONT = new Font("Arial", Font.BOLD, 50);
     public static final ImageIcon WHITE = new ImageIcon("resource/white.jpg");
     public static final ImageIcon BLACK = new ImageIcon("resource/black.jpg");
     public static final WhitePiece WHITE_SOLDIER_W = new WhitePiece("resource/white_soldier_in_white.jpg",ChessBoard.BackGroundType.WhiteBack,ChessBoard.PieceType.Soldier);
@@ -344,6 +345,24 @@ public class ChessBoard extends JPanel {
         }
     }
 
+    public boolean isWhiteWin(){
+        for(AbstractChessPiece piece : BlackPlayer.black_pieces_list){
+            if(piece instanceof King){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isBlackWin(){
+        for(AbstractChessPiece piece : WhitePlayer.white_pieces_list){
+            if(piece instanceof King){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void createChessPiece(PieceType pieceType, JButton chess_block,
                                  ImageIcon chess_piece){
         switch (pieceType){
@@ -505,6 +524,9 @@ public class ChessBoard extends JPanel {
                     if(abstractChessPiece instanceof Soldier){
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果移动成功，则判断当前轮到谁走
+                    if(isWhiteWin()){//如果白棋胜利，则显示胜利信息。
+                        GameScreen.addNotice("White Win!\n",WINNER_FONT);
+                    }
                     changeSide();
                 }
             } else if (hasPieces && !WhitePlayer.w_readyToMove.isEmpty()) {
@@ -526,6 +548,9 @@ public class ChessBoard extends JPanel {
                     if(abstractChessPiece instanceof Soldier){
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果攻击成功，则判断当前轮到谁走
+                    if(isWhiteWin()){//如果白棋胜利，则显示胜利信息。
+                        GameScreen.addNotice("White Win!\n",WINNER_FONT);
+                    }
                     changeSide();
                 }
             }
@@ -560,6 +585,9 @@ public class ChessBoard extends JPanel {
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }
                     //如果移动成功，则判断当前轮到谁走
+                    if(isBlackWin()){//如果黑棋胜利，则显示胜利信息。
+                        GameScreen.addNotice("Black Win!\n",WINNER_FONT);
+                    }
                     changeSide();
                 }
             }else if (hasPieces && !BlackPlayer.b_readyToMove.isEmpty()) {
@@ -581,6 +609,9 @@ public class ChessBoard extends JPanel {
                     if(abstractChessPiece instanceof Soldier){
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果攻击成功，则判断当前轮到谁走
+                    if(isBlackWin()){//如果黑棋胜利，则显示胜利信息。
+                        GameScreen.addNotice("Black Win!\n",WINNER_FONT);
+                    }
                     changeSide();
                 }
             }
