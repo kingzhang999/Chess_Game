@@ -493,7 +493,7 @@ public class ChessBoard extends JPanel {
         }
 
         private void whitePlayerMove(boolean hasPieces, JButton trigger) {
-            System.out.println("white turn");
+            GameScreen.addNotice("White turn",null);
             //System.out.println("hasPieces && WhitePlayer.w_readyToMove.isEmpty: "+(hasPieces && WhitePlayer.w_readyToMove.isEmpty()));
             if (hasPieces && WhitePlayer.w_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
 
@@ -514,7 +514,6 @@ public class ChessBoard extends JPanel {
 
                 AbstractChessPiece abstractChessPiece = WhitePlayer.getNext_W_ReadyToMove();
                 boolean isSuccess = abstractChessPiece.move(trigger);//移动棋子。
-                //System.out.println("here");
                 //System.out.println("isSuccess: "+isSuccess);//test
 
                 if (isSuccess) {
@@ -525,7 +524,7 @@ public class ChessBoard extends JPanel {
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果移动成功，则判断当前轮到谁走
                     if(isWhiteWin()){//如果白棋胜利，则显示胜利信息。
-                        GameScreen.addNotice("White Win!\n",WINNER_FONT);
+                        GameScreen.addNotice("White Win!",WINNER_FONT);
                     }
                     changeSide();
                 }
@@ -549,7 +548,7 @@ public class ChessBoard extends JPanel {
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果攻击成功，则判断当前轮到谁走
                     if(isWhiteWin()){//如果白棋胜利，则显示胜利信息。
-                        GameScreen.addNotice("White Win!\n",WINNER_FONT);
+                        GameScreen.addNotice("White Win!",WINNER_FONT);
                     }
                     changeSide();
                 }
@@ -557,7 +556,7 @@ public class ChessBoard extends JPanel {
         }
 
         private void blackPlayerMove(boolean hasPieces, JButton trigger) {
-            System.out.println("Black turn");
+            GameScreen.addNotice("Black turn",null);
             if (hasPieces && BlackPlayer.b_readyToMove.isEmpty()) {//检查当前格子是否有棋子并且确保当前没有棋子需要移动。
 
                 //遍历棋子列表，找到触发ActionEvent的格子上所对应的棋子实例。
@@ -586,7 +585,7 @@ public class ChessBoard extends JPanel {
                     }
                     //如果移动成功，则判断当前轮到谁走
                     if(isBlackWin()){//如果黑棋胜利，则显示胜利信息。
-                        GameScreen.addNotice("Black Win!\n",WINNER_FONT);
+                        GameScreen.addNotice("Black Win!",WINNER_FONT);
                     }
                     changeSide();
                 }
@@ -610,7 +609,7 @@ public class ChessBoard extends JPanel {
                         ((Soldier) abstractChessPiece).setFirstMove(false);
                     }//如果攻击成功，则判断当前轮到谁走
                     if(isBlackWin()){//如果黑棋胜利，则显示胜利信息。
-                        GameScreen.addNotice("Black Win!\n",WINNER_FONT);
+                        GameScreen.addNotice("Black Win!",WINNER_FONT);
                     }
                     changeSide();
                 }

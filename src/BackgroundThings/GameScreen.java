@@ -69,9 +69,15 @@ public class GameScreen extends JFrame{
         return menuBar;
     }
 
-    public JScrollPane createEventPanel() {
+    public JPanel createEventPanel() {
         notice_board = new JTextArea(10,14);
         JScrollPane event_scroll_pane = new JScrollPane(notice_board);
+        JPanel event_panel = new JPanel(new BorderLayout());
+        JButton clear_button = new JButton("Clear");
+
+        //设置按钮事件
+        clear_button.addActionListener(e -> notice_board.setText(""));
+
         //设置文本框不可编辑和自动换行
         notice_board.setEditable(false);
         notice_board.setLineWrap(true);
@@ -81,7 +87,11 @@ public class GameScreen extends JFrame{
         event_scroll_pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         event_scroll_pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        return event_scroll_pane;
+        //设置事件面板
+        event_panel.add(event_scroll_pane, BorderLayout.CENTER);
+        event_panel.add(clear_button, BorderLayout.SOUTH);
+
+        return event_panel;
     }
 
     public static void addNotice(String notice,Font font){
@@ -93,7 +103,7 @@ public class GameScreen extends JFrame{
         String time = now.format(formatter);
         notice_board.setFont(font);
         notice_board.append(time+": \n");
-        notice_board.append(notice);
+        notice_board.append(notice+"\n");
         //将字体恢复成默认字体。
         notice_board.setFont(null);
     }
@@ -111,7 +121,7 @@ public class GameScreen extends JFrame{
             File files = fileChooser.getSelectedFile();
             saveFile(files);
             //打印通知
-            addNotice("Save game %s okay!\n".formatted(files.getName()),null);
+            addNotice("Save game %s okay!".formatted(files.getName()),null);
         }
 
         private void saveFile(File file) {
@@ -182,7 +192,7 @@ public class GameScreen extends JFrame{
             ChessBoard.getChessBoard().revalidate();
             ChessBoard.getChessBoard().repaint();
             //打印通知
-            addNotice("Load game %s okay!\n".formatted(manual.getName()),null);
+            addNotice("Load game %s okay!".formatted(manual.getName()),null);
         }
     }
 }
