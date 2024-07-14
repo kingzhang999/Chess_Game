@@ -151,6 +151,8 @@ public class GameScreen extends JFrame{
                     }
                 }
             }
+            //保存当前轮到谁下并且保存棋盘数据
+            data.add(ChessBoard.getGameTurn().toString());
             writeToFile(file, data);
         }
 

@@ -207,6 +207,8 @@ public class ChessBoard extends JPanel {
                         y += 1;
                     }
                 }
+                case "White" -> setGameTurn(GameTurn.WHITE_TURN);
+                case "Black" -> setGameTurn(GameTurn.BLACK_TURN);
             }
         }
     }
@@ -631,7 +633,15 @@ public class ChessBoard extends JPanel {
     }
 
     enum GameTurn {
-        WHITE_TURN, BLACK_TURN
+        WHITE_TURN, BLACK_TURN;
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case WHITE_TURN -> "White";
+                case BLACK_TURN -> "Black";
+            };
+        }
     }
     public enum PieceType {
         Soldier,Queen,Car,Horse,Elephant,King
