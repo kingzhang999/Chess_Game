@@ -5,11 +5,13 @@ import Chesspieces.WhitePiece;
 import Players.BlackPlayer;
 import Players.WhitePlayer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -45,8 +47,10 @@ public class GameScreen extends JFrame{
     public JMenuBar createMenuBar() {
         JMenuBar menuBar;
         JMenu menu;
+        JMenu menu1;
         JMenuItem menuItem;
         JMenuItem menuItem2;
+        JMenuItem menuItem3;
 
         //Create the menu bar.
         menuBar = new JMenuBar();
@@ -55,6 +59,11 @@ public class GameScreen extends JFrame{
         menu = new JMenu("File");
         menu.setMnemonic(KeyEvent.VK_F);
         menuBar.add(menu);
+
+        //Build the second menu.
+        menu1 = new JMenu("photo");
+        menu1.setMnemonic(KeyEvent.VK_P);
+        menuBar.add(menu1);
 
         //Add a menu item.
         menuItem = new JMenuItem("save", KeyEvent.VK_N);
@@ -65,6 +74,11 @@ public class GameScreen extends JFrame{
         menuItem2 = new JMenuItem("load", KeyEvent.VK_O);
         menuItem2.addActionListener(new LoadGame());
         menu.add(menuItem2);
+
+        //Add a menu item.
+        menuItem3 = new JMenuItem("take photo", KeyEvent.VK_X);
+        menuItem3.addActionListener(new TakePhoto());
+        menu1.add(menuItem3);
 
         return menuBar;
     }
@@ -195,6 +209,72 @@ public class GameScreen extends JFrame{
             ChessBoard.getChessBoard().repaint();
             //打印通知
             addNotice("Load game %s okay!".formatted(manual.getName()),null);
+        }
+    }
+
+    private class TakePhoto implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (isDefaultSavePath()){
+                JFileChooser fileChooser = new JFileChooser("resource/photo/");
+                fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Images", "png"));
+
+                // 显示文件选择器对话框
+                int result = fileChooser.showSaveDialog(GameScreen.this);
+
+                // 如果用户选择了路径并点击了保存按钮
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String filePath = selectedFile.getPath();
+                    if (!filePath.endsWith(".png")) {
+                        filePath += ".png";  // 确保文件扩展名是.png
+                    }
+
+                    // 创建BufferedImage对象
+                    BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g2d = image.createGraphics();
+
+                    // 将窗口内容绘制到BufferedImage上
+                    getContentPane().printAll(g2d);
+                    g2d.dispose();
+                    // 保存图像文件
+                    try {
+                        ImageIO.write(image, "png", new File(filePath));
+                        JOptionPane.showMessageDialog(GameScreen.this, "图片已保存到: " + filePath, "保存成功", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(GameScreen.this, "图片保存失败: " + ex.getMessage(), "保存失败", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }else {
+                // 创建BufferedImage对象
+                BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = image.createGraphics();
+
+                //拼接图片路径
+                String filePath = String.format("resource/photo/%d.png", image.hashCode());
+
+                // 将窗口内容绘制到BufferedImage上
+                getContentPane().printAll(g2d);
+                g2d.dispose();
+                // 保存图像文件
+                try {
+                    ImageIO.write(image, "png", new File(filePath));
+                    JOptionPane.showMessageDialog(GameScreen.this, "图片已保存到: " + filePath, "保存成功", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(GameScreen.this, "图片保存失败: " + ex.getMessage(), "保存失败", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        }
+
+        private boolean isDefaultSavePath(){
+            // 弹出确认对话框，询问用户是否要自定义保存路径
+            int option = JOptionPane.showConfirmDialog(GameScreen.this, "是否要自定义保存路径？", "保存图片", JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }
