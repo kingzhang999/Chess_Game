@@ -1,9 +1,7 @@
 package BackgroundThings;
 
-import Chesspieces.BlackPiece;
-import Chesspieces.WhitePiece;
-import Players.BlackPlayer;
-import Players.WhitePlayer;
+import Chesspieces.PieceImageIcon;
+import Utilities.Resources;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,17 +17,27 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
+import static BackgroundThings.ChessBoard.CELL_SIZE;
 import static BackgroundThings.ChessBoard.COLS;
 import static BackgroundThings.ChessBoard.ROWS;
 
-public class GameScreen extends JFrame{
+public class GameScreen extends JFrame {
+    private static final long serialVersionUID = 1L;
+
+    //存档与截图写在 jar 旁边的这两个目录里；初始摆法是打进 jar 的只读资源。
+    private static final String MANUAL_DIRECTORY = "saves";
+    private static final String PHOTO_DIRECTORY = "photos";
+    private static final DateTimeFormatter NOTICE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");
 
     private static JTextArea notice_board;
-    public GameScreen(){
+
+    public GameScreen() {
         setTitle("Chess Board");
         setLayout(new BorderLayout());
-        setSize(COLS * ChessBoard.CELL_SIZE+180, ROWS * ChessBoard.CELL_SIZE+60);
+        setSize(COLS * CELL_SIZE + 180, ROWS * CELL_SIZE + 60);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -38,53 +46,57 @@ public class GameScreen extends JFrame{
         setVisible(true);
     }
 
-    private void initializeScreen(){
-        getContentPane().add(ChessBoard.getChessBoard(),BorderLayout.CENTER);
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(GameScreen::new);
+    }
+
+    public static void addNotice(String notice, Font font) {
+        if (notice_board == null) {
+            //事件面板还没创建（例如棋盘脱离窗口单独使用时），只跳过日志，不影响行棋。
+            return;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        notice_board.setFont(font);
+        notice_board.append(now.format(NOTICE_TIME_FORMAT) + ": \n");
+        notice_board.append(notice + "\n");
+        //将字体恢复成默认字体。
+        notice_board.setFont(null);
+    }
+
+    private void initializeScreen() {
+        getContentPane().add(ChessBoard.getChessBoard(), BorderLayout.CENTER);
         setJMenuBar(createMenuBar());
         getContentPane().add(createEventPanel(), BorderLayout.WEST);
     }
 
     public JMenuBar createMenuBar() {
-        JMenuBar menuBar;
-        JMenu menu;
-        JMenu menu1;
-        JMenuItem menuItem;
-        JMenuItem menuItem2;
-        JMenuItem menuItem3;
+        JMenuBar menuBar = new JMenuBar();
 
-        //Create the menu bar.
-        menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        menuBar.add(fileMenu);
 
-        //Build the first menu.
-        menu = new JMenu("File");
-        menu.setMnemonic(KeyEvent.VK_F);
-        menuBar.add(menu);
+        JMenu photoMenu = new JMenu("photo");
+        photoMenu.setMnemonic(KeyEvent.VK_P);
+        menuBar.add(photoMenu);
 
-        //Build the second menu.
-        menu1 = new JMenu("photo");
-        menu1.setMnemonic(KeyEvent.VK_P);
-        menuBar.add(menu1);
+        JMenuItem saveItem = new JMenuItem("save", KeyEvent.VK_N);
+        saveItem.addActionListener(new SaveGame());
+        fileMenu.add(saveItem);
 
-        //Add a menu item.
-        menuItem = new JMenuItem("save", KeyEvent.VK_N);
-        menuItem.addActionListener(new SaveGame());
-        menu.add(menuItem);
+        JMenuItem loadItem = new JMenuItem("load", KeyEvent.VK_O);
+        loadItem.addActionListener(new LoadGame());
+        fileMenu.add(loadItem);
 
-        //Add a menu item.
-        menuItem2 = new JMenuItem("load", KeyEvent.VK_O);
-        menuItem2.addActionListener(new LoadGame());
-        menu.add(menuItem2);
-
-        //Add a menu item.
-        menuItem3 = new JMenuItem("take photo", KeyEvent.VK_X);
-        menuItem3.addActionListener(new TakePhoto());
-        menu1.add(menuItem3);
+        JMenuItem photoItem = new JMenuItem("take photo", KeyEvent.VK_X);
+        photoItem.addActionListener(new TakePhoto());
+        photoMenu.add(photoItem);
 
         return menuBar;
     }
 
     public JPanel createEventPanel() {
-        notice_board = new JTextArea(10,14);
+        notice_board = new JTextArea(10, 14);
         JScrollPane event_scroll_pane = new JScrollPane(notice_board);
         JPanel event_panel = new JPanel(new BorderLayout());
         JButton clear_button = new JButton("Clear");
@@ -108,76 +120,47 @@ public class GameScreen extends JFrame{
         return event_panel;
     }
 
-    public static void addNotice(String notice,Font font){
-        // 获取当前日期和时间
-        LocalDateTime now = LocalDateTime.now();
-        // 创建一个日期时间格式器
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");
-        // 格式化当前日期和时间
-        String time = now.format(formatter);
-        notice_board.setFont(font);
-        notice_board.append(time+": \n");
-        notice_board.append(notice+"\n");
-        //将字体恢复成默认字体。
-        notice_board.setFont(null);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(GameScreen::new);
-    }
-
     private static class SaveGame implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
-            JFileChooser fileChooser = new JFileChooser("resource/manuals");
-            fileChooser.showSaveDialog(ChessBoard.chessBoard);
-            File files = fileChooser.getSelectedFile();
-            saveFile(files);
-            //打印通知
-            addNotice("Save game %s okay!".formatted(files.getName()),null);
+            JFileChooser fileChooser = new JFileChooser(Resources.writableDirectory(MANUAL_DIRECTORY));
+            if (fileChooser.showSaveDialog(ChessBoard.getChessBoard()) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File file = fileChooser.getSelectedFile();
+            if (file == null) {
+                //用户取消了选择，直接结束。
+                return;
+            }
+            saveFile(file);
+            addNotice("Save game %s okay!".formatted(file.getName()), null);
         }
 
         private void saveFile(File file) {
-            ArrayList<String> data = new ArrayList<>();
-            for (JButton[] chess_blocks : ChessBoard.board){
-                for (JButton chess_block : chess_blocks){
-                    if (chess_block.getIcon() instanceof WhitePiece whitePiece){
-                        switch (whitePiece.getPieceType()) {
-                            case Soldier -> data.add("5");
-                            case Car -> data.add("0");
-                            case Horse -> data.add("1");
-                            case Elephant -> data.add("2");
-                            case King -> data.add("4");
-                            case Queen -> data.add("3");
-                        }
-                    }else if(chess_block.getIcon() instanceof BlackPiece blackPiece){
-                        switch (blackPiece.getPieceType()) {
-                            case Soldier -> data.add("7");
-                            case Car -> data.add("8");
-                            case Horse -> data.add("9");
-                            case Elephant -> data.add("10");
-                            case King -> data.add("12");
-                            case Queen -> data.add("11");
-                        }
-                    }else{
-                        data.add("6");
+            List<String> data = new ArrayList<>();
+            for (JButton[] chess_blocks : ChessBoard.getBoard()) {
+                for (JButton chess_block : chess_blocks) {
+                    if (chess_block.getIcon() instanceof PieceImageIcon pieceImage) {
+                        data.add(String.valueOf(
+                                pieceImage.getPieceType().archiveCode(pieceImage.isWhite())));
+                    } else {
+                        data.add(String.valueOf(ChessBoard.PieceType.EMPTY_CODE));
                     }
                 }
             }
-            //保存当前轮到谁下并且保存棋盘数据
+            //保存当前轮到谁下
             data.add(ChessBoard.getGameTurn().toString());
             writeToFile(file, data);
         }
 
-        private void writeToFile(File file, ArrayList<String> data) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (int i = 1; i < data.size() +1; i++) {
+        private void writeToFile(File file, List<String> data) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(Resources.outputFile(file.getPath())))) {
+                for (int i = 1; i < data.size() + 1; i++) {
                     writer.write(data.get(i - 1));
                     if (i < data.size() && i % 8 != 0) {
                         writer.write(",");
                     }
-                    if (i % 8 == 0){
+                    if (i % 8 == 0) {
                         writer.newLine();
                     }
                 }
@@ -185,95 +168,80 @@ public class GameScreen extends JFrame{
                 System.err.println("An error occurred while writing to the file: " + e.getMessage());
             }
         }
-
     }
 
     private static class LoadGame implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
-            //打开文件选取窗口
-            JFileChooser fileChooser = new JFileChooser("resource/manuals");
-            fileChooser.showOpenDialog(ChessBoard.getChessBoard());
-
-            //清除之前的棋子
-            ChessBoard.getChessBoard().removeAllChessPiecesAndBlocks();
-            WhitePlayer.removeAll_W_ChessPieces();
-            BlackPlayer.removeAll_B_ChessPieces();
-            ChessBoard.getChessBoard().removeAll();
-
-            //加载新棋子
+            JFileChooser fileChooser = new JFileChooser(Resources.writableDirectory(MANUAL_DIRECTORY));
+            if (fileChooser.showOpenDialog(ChessBoard.getChessBoard()) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
             File manual = fileChooser.getSelectedFile();
+            if (manual == null) {
+                //用户取消了选择，直接结束。
+                return;
+            }
+
+            //按存档重建棋盘：清空旧棋子、重新摆放。
             ChessBoard.getChessBoard().initializeBoard(manual);
-            ChessBoard.getChessBoard().revalidate();
-            ChessBoard.getChessBoard().repaint();
             //打印通知
-            addNotice("Load game %s okay!".formatted(manual.getName()),null);
+            addNotice("Load game %s okay!".formatted(manual.getName()), null);
         }
     }
 
     private class TakePhoto implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (isDefaultSavePath()){
-                JFileChooser fileChooser = new JFileChooser("resource/photo/");
-                fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Images", "png"));
-
-                // 显示文件选择器对话框
-                int result = fileChooser.showSaveDialog(GameScreen.this);
-
-                // 如果用户选择了路径并点击了保存按钮
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    String filePath = selectedFile.getPath();
-                    if (!filePath.endsWith(".png")) {
-                        filePath += ".png";  // 确保文件扩展名是.png
-                    }
-
-                    // 创建BufferedImage对象
-                    BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g2d = image.createGraphics();
-
-                    // 将窗口内容绘制到BufferedImage上
-                    getContentPane().printAll(g2d);
-                    g2d.dispose();
-                    // 保存图像文件
-                    try {
-                        ImageIO.write(image, "png", new File(filePath));
-                        JOptionPane.showMessageDialog(GameScreen.this, "图片已保存到: " + filePath, "保存成功", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(GameScreen.this, "图片保存失败: " + ex.getMessage(), "保存失败", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }else {
-                // 创建BufferedImage对象
-                BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2d = image.createGraphics();
-
-                //拼接图片路径
-                String filePath = String.format("resource/photo/%d.png", image.hashCode());
-
-                // 将窗口内容绘制到BufferedImage上
-                getContentPane().printAll(g2d);
-                g2d.dispose();
-                // 保存图像文件
-                try {
-                    ImageIO.write(image, "png", new File(filePath));
-                    JOptionPane.showMessageDialog(GameScreen.this, "图片已保存到: " + filePath, "保存成功", JOptionPane.INFORMATION_MESSAGE);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(GameScreen.this, "图片保存失败: " + ex.getMessage(), "保存失败", JOptionPane.ERROR_MESSAGE);
-                }
+            if (askCustomSavePath()) {
+                savePhotoToChosenPath();
+            } else {
+                savePhotoToDefaultPath();
             }
-
         }
 
-        private boolean isDefaultSavePath(){
-            // 弹出确认对话框，询问用户是否要自定义保存路径
-            int option = JOptionPane.showConfirmDialog(GameScreen.this, "是否要自定义保存路径？", "保存图片", JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_OPTION) {
-                return true;
-            } else {
-                return false;
+        private boolean askCustomSavePath() {
+            //弹出确认对话框，询问用户是否要自定义保存路径
+            return JOptionPane.showConfirmDialog(GameScreen.this, "是否要自定义保存路径？", "保存图片",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+        }
+
+        private void savePhotoToChosenPath() {
+            JFileChooser fileChooser = new JFileChooser(Resources.writableDirectory(PHOTO_DIRECTORY));
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Images", "png"));
+            if (fileChooser.showSaveDialog(GameScreen.this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            File selectedFile = fileChooser.getSelectedFile();
+            if (selectedFile == null) {
+                //用户取消了选择，直接结束。
+                return;
+            }
+            savePhoto(ensurePngSuffix(selectedFile.getPath()));
+        }
+
+        private void savePhotoToDefaultPath() {
+            savePhoto(String.format("%s/%d.png", PHOTO_DIRECTORY, System.currentTimeMillis()));
+        }
+
+        private String ensurePngSuffix(String filePath) {
+            return filePath.endsWith(".png") ? filePath : filePath + ".png";
+        }
+
+        private void savePhoto(String filePath) {
+            //创建BufferedImage对象，并将窗口内容绘制到其中。
+            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = image.createGraphics();
+            getContentPane().printAll(g2d);
+            g2d.dispose();
+            try {
+                //截图是运行时产物，父目录不存在时自动创建。
+                ImageIO.write(image, "png", Resources.outputFile(filePath));
+                JOptionPane.showMessageDialog(GameScreen.this, "图片已保存到: " + filePath, "保存成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(GameScreen.this, "图片保存失败: " + ex.getMessage(), "保存失败",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

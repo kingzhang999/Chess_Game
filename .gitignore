@@ -30,3 +30,10 @@ bin/
 /resource/manuals/李涛马上输.txt
 /resource/manuals/test.txt
 /resource/manuals/output.txt
+/resource
+
+### 打包与运行产物 ###
+/.build/
+/Chess_Game.jar
+/saves/
+/photos/

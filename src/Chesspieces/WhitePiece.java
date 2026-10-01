@@ -2,22 +2,26 @@ package Chesspieces;
 
 import BackgroundThings.ChessBoard;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
-public class WhitePiece extends ImageIcon {
-    private final ChessBoard.BackGroundType background;
-    private final ChessBoard.PieceType pieceType;
-    public WhitePiece(String path, ChessBoard.BackGroundType background, ChessBoard.PieceType pieceType) {
-        super(path);
-        this.background = background;
-        this.pieceType = pieceType;
+/**
+ * 白方棋子的贴图。
+ */
+public class WhitePiece extends PieceImageIcon {
+    private static final long serialVersionUID = 1L;
+
+    public WhitePiece(ImageIcon image, ChessBoard.BackGroundType background,
+                      ChessBoard.PieceType pieceType) {
+        super(image, background, pieceType);
     }
 
-    public ChessBoard.BackGroundType getBackground() {
-        return background;
+    @Override
+    public boolean isWhite() {
+        return true;
     }
 
-    public ChessBoard.PieceType getPieceType() {
-        return pieceType;
+    @Override
+    public boolean isBlack() {
+        return false;
     }
 }

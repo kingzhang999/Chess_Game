@@ -2,56 +2,56 @@ package Players;
 
 import Chesspieces.AbstractChessPiece;
 
-public class WhitePlayer {
-    public static int white_pieces_count = 0;
-    public static final int CHESS_PIECE_NUMBER = 16;
-    public static AbstractChessPiece[] white_pieces_list = new AbstractChessPiece[CHESS_PIECE_NUMBER];
-    public static ArrayStack<AbstractChessPiece> w_readyToMove = new ArrayStack<>(16);
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
-    public static boolean isInWhitePiecesList(AbstractChessPiece piece) {
-        for (AbstractChessPiece p : white_pieces_list) {
-            //System.out.println("W_ChessPiece: "+p);//test
-            //System.out.println("W_target_Found: "+piece);//test
-            if(p == piece){
-                //System.out.println("W_Piece_Found: "+p);//test
-                return true;
-            }
-        }
-        return false;
+/**
+ * 白方：棋子名册与“已选中待走”的棋子。
+ *
+ * <p>名册改用 List 管理，取代原先“定长数组 + 手工计数”的写法：
+ * 删除棋子后不再需要手工维护计数，也不会出现计数与数组内容不一致的问题。</p>
+ */
+public final class WhitePlayer {
+    public static final int CHESS_PIECE_NUMBER = 16;
+    private static final List<AbstractChessPiece> PIECES = new ArrayList<>(CHESS_PIECE_NUMBER);
+    private static final Deque<AbstractChessPiece> READY_TO_MOVE = new ArrayDeque<>(CHESS_PIECE_NUMBER);
+
+    private WhitePlayer() {
+    }
+
+    public static List<AbstractChessPiece> pieces() {
+        return PIECES;
+    }
+
+    public static boolean contains(AbstractChessPiece piece) {
+        return PIECES.contains(piece);
     }
 
     public static void add_W_Piece(AbstractChessPiece piece) {
-        white_pieces_list[white_pieces_count] = piece;
-        white_pieces_count++;
+        PIECES.add(piece);
     }
 
     public static void remove_W_Piece(AbstractChessPiece piece) {
-        for (int i = 0; i < CHESS_PIECE_NUMBER; i++) {
-            //在for循环中使用CHESS_PIECE_NUMBER作为循环次数是为了避免删除了一个在数组靠后位置的元素时，
-            //white_pieces_count自动减一，如果后面需要删除更靠后的元素时，无法循环到那个元素。以至于导致错误。
-            if (white_pieces_list[i] == piece) {
-                //System.out.println("W_Piece_Removed: "+piece);//test
-                white_pieces_list[i] = null;
-                System.gc();//垃圾回收
-                white_pieces_count--;
-                break;
-            }
-        }
+        PIECES.remove(piece);
     }
 
     public static void add_W_ReadyToMove(AbstractChessPiece piece) {
-        w_readyToMove.push(piece);
+        READY_TO_MOVE.push(piece);
     }
 
     public static AbstractChessPiece getNext_W_ReadyToMove() {
-        return w_readyToMove.pop();
+        return READY_TO_MOVE.pop();
     }
 
-    public static void removeAll_W_ChessPieces() {
-        for(int i = 0; i < CHESS_PIECE_NUMBER; i++){
-            white_pieces_list[i] = null;
-            System.gc();
-            white_pieces_count = 0;
-        }
-    }//此方法暂时废弃
+    public static Deque<AbstractChessPiece> readyToMove() {
+        return READY_TO_MOVE;
+    }
+
+    /** 重新开局时清空白方状态。 */
+    public static void clear() {
+        PIECES.clear();
+        READY_TO_MOVE.clear();
+    }
 }
