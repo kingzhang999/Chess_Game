@@ -63,6 +63,28 @@ public class GameScreen extends JFrame {
         notice_board.setFont(null);
     }
 
+    /**
+     * 分出胜负时弹出提示：显示哪一方获胜，并询问是否重置棋局。
+     *
+     * @param winner 获胜方
+     * @return {@code true} 表示用户选择重置棋局，需要重开；{@code false} 表示不做任何处理
+     */
+    public static boolean showWinnerAndAskReset(ChessBoard.GameTurn winner) {
+        String winnerName = winner == ChessBoard.GameTurn.WHITE_TURN ? "白方" : "黑方";
+        GameScreen.addNotice(winnerName + " Win!", ChessBoard.WINNER_FONT);
+
+        if (GraphicsEnvironment.isHeadless()) {
+            //没有图形环境（例如自动化测试）时不弹窗，直接按“不重置”处理。
+            return false;
+        }
+        int choice = JOptionPane.showConfirmDialog(null,
+                winnerName + "获胜！\n是否重置棋局？",
+                "Game Over",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
+        return choice == JOptionPane.OK_OPTION;
+    }
+
     private void initializeScreen() {
         getContentPane().add(ChessBoard.getChessBoard(), BorderLayout.CENTER);
         setJMenuBar(createMenuBar());

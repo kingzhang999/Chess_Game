@@ -347,12 +347,32 @@ public class ChessBoard extends JPanel {
         if (piece instanceof Soldier soldier) {
             soldier.setFirstMove(false);
         }
-        if (isWhiteWin()) {
-            GameScreen.addNotice("White Win!", WINNER_FONT);
-        } else if (isBlackWin()) {
-            GameScreen.addNotice("Black Win!", WINNER_FONT);
+
+        //分出胜负时由窗口提示并询问是否重开；重开后棋盘已经重新摆好，就不用再换手了。
+        GameTurn winner = winner();
+        if (winner != null) {
+            if (GameScreen.showWinnerAndAskReset(winner)) {
+                restart();
+            }
+            return;
         }
         changeSide();
+    }
+
+    /** 分出胜负时返回获胜方，否则返回 {@code null}。 */
+    private static GameTurn winner() {
+        if (isWhiteWin()) {
+            return GameTurn.WHITE_TURN;
+        }
+        if (isBlackWin()) {
+            return GameTurn.BLACK_TURN;
+        }
+        return null;
+    }
+
+    /** 重新开局：按内置初始摆法重摆棋子，并由白方先行。 */
+    public void restart() {
+        initializeBoard();
     }
 
     public enum GameTurn {
