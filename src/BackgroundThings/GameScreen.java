@@ -27,7 +27,7 @@ public class GameScreen extends JFrame {
     private static final long serialVersionUID = 1L;
 
     //存档与截图写在 jar 旁边的这两个目录里；初始摆法是打进 jar 的只读资源。
-    private static final String MANUAL_DIRECTORY = "saves";
+    private static final String MANUAL_DIRECTORY = "resource/manuals";
     private static final String PHOTO_DIRECTORY = "photos";
     private static final DateTimeFormatter NOTICE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy年MM月dd日HH时mm分ss秒");

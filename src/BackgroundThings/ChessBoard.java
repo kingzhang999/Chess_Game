@@ -173,6 +173,9 @@ public class ChessBoard extends JPanel {
         WhitePlayer.clear();
         BlackPlayer.clear();
         clearChessPieces();
+        //默认白先行；存档里的手方行（White/Black）会覆盖它。
+        //否则恰好只有 64 格的存档会把上一局的回合残留下来。
+        gameTurn = GameTurn.WHITE_TURN;
 
         setLayout(new GridLayout(ROWS, COLS));
         board = new JButton[ROWS][COLS];
@@ -188,10 +191,18 @@ public class ChessBoard extends JPanel {
     }
 
     /**
-     * 棋盘格底色固定由行列决定：偶数行从白格开始，奇数行从黑格开始。
+     * 棋盘格底色固定由行列决定：偶数行从白格开始，奇数行从黑格开始，(row+col) 为奇数即白底。
+     *
+     * <p>底色是能从坐标直接算出来的，不能靠比对贴图对象来判断——格子上站着棋子时贴图是
+     * 棋子贴图，按贴图判断会一律判成“非白底”，吃子时就出现白格变黑、黑格变白的错乱。</p>
      */
-    private static boolean isWhiteBlock(int row, int col) {
+    public static boolean isWhiteBlock(int row, int col) {
         return (row + col) % 2 == 1;
+    }
+
+    /** 某一格的空底色贴图。 */
+    public static ImageIcon emptyBlockIcon(int row, int col) {
+        return isWhiteBlock(row, col) ? WHITE : BLACK;
     }
 
     /** 空格编码。 */

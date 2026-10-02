@@ -4,6 +4,7 @@ import BackgroundThings.ChessBoard;
 import Behaviors.AttackBehavior;
 import Chesspieces.AbstractChessPiece;
 import Chesspieces.PieceAppearance;
+import Chesspieces.PieceImageIcon;
 import Players.BlackPlayer;
 import Players.WhitePlayer;
 
@@ -12,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 吃子行为的公共实现。与 {@link PieceMoveBehavior} 对称：
- * 子类复用 {@link PieceMoveBehavior#scanDirection} 那套扫描，说明本方棋子能到达哪些格子，
- * 基类再筛出其中被敌方棋子占据的格子，并完成吃子。
+ * 吃子行为的公共实现：所有棋种共用的“定位 + 吃子落格 + 移除被吃棋子”。
+ * 子类只需要实现 {@link #scanTargets()} 说明本枚棋子按走法能到达哪些格子
+ * （空格与敌方棋子所在格都算），基类再筛出其中被对方棋子占据的格子。
  */
-public abstract class PieceAttackBehavior implements AttackBehavior {
+public abstract class PieceAttackBehavior extends DirectionalScanner implements AttackBehavior {
     protected final AbstractChessPiece piece;
     private final List<JButton> attackableBlocks = new ArrayList<>();
     private int x;
@@ -49,6 +50,8 @@ public abstract class PieceAttackBehavior implements AttackBehavior {
 
     private void updateAttackableBlocks() {
         if (piece.isOwnPiece()) {
+            //与走法同理：扫描前先按棋子当前所在格刷新坐标。
+            updateLocation();
             attackableBlocks.clear();
             for (JButton block : scanTargets()) {
                 //只有被对方棋子占据的格子才能吃。
@@ -72,21 +75,24 @@ public abstract class PieceAttackBehavior implements AttackBehavior {
         int[] target = ChessBoard.findElement(target_chess_block);
         int target_x = target[0];
         int target_y = target[1];
-        boolean targetIsWhiteBlock = (ImageIcon) target_chess_block.getIcon() == ChessBoard.WHITE;
 
-        //被吃掉的敌方棋子所在格将来要还原成空格，先按底色算出来。
-        ImageIcon emptyBlockIcon = targetIsWhiteBlock ? ChessBoard.WHITE : ChessBoard.BLACK;
+        //底色由坐标算出来。目标格上站着敌方棋子，贴图是棋子贴图，
+        //按贴图判断会一律判成“非白底”，于是白格上的吃子会显示成黑格。
+        boolean targetIsWhiteBlock = ChessBoard.isWhiteBlock(target_x, target_y);
+        //这里同时更新“格子的贴图”和“棋子自身的贴图”，两者必须一致：
+        //只换格子会让棋子带着旧底色的贴图继续走，之后再进出黑白格就全乱了。
+        PieceImageIcon appearance =
+                PieceAppearance.imageOf(piece.getPieceType(), piece.isWhitePiece(), targetIsWhiteBlock);
 
-        //把棋子离开的格子还原成它来之前的样子。
-        ChessBoard.changeChessBoard(x, y, piece.getChess_block_iconImage());
-        piece.setChess_block_iconImage(emptyBlockIcon);
+        //把棋子离开的格子还原成它本来的底色。
+        ChessBoard.changeChessBoard(x, y, ChessBoard.emptyBlockIcon(x, y));
 
         //移除目标格上的敌方棋子。
         ChessBoard.findPieceOn(target_chess_block).ifPresent(this::deletePiece);
 
+        piece.setChess_piece(appearance);
         piece.setChess_block(target_chess_block);
-        ChessBoard.changeChessBoard(target_x, target_y,
-                PieceAppearance.imageOf(piece.getPieceType(), piece.isWhitePiece(), targetIsWhiteBlock));
+        ChessBoard.changeChessBoard(target_x, target_y, appearance);
         ChessBoard.getChessBoardElement(target_x, target_y).repaint();
 
         updateLocation();
@@ -110,28 +116,10 @@ public abstract class PieceAttackBehavior implements AttackBehavior {
         return y;
     }
 
-    protected static boolean canReach(int row, int col) {
-        return row >= 0 && row < ChessBoard.ROWS && col >= 0 && col < ChessBoard.COLS;
-    }
-
-    protected static JButton blockAt(int row, int col) {
-        return ChessBoard.getChessBoardElement(row, col);
-    }
-
     /**
-     * 沿一个方向一直前进：途中空格只是通道，遇到棋子时，若是敌方棋子则该格可吃，
-     * 无论如何都在此停止。直线与斜线的滑行棋子共用这一段扫描。
+     * 沿一个方向一直前进：途中空格只是通道，遇到棋子时把该格加入结果，然后停止。
      */
     protected void scanDirection(List<JButton> blocks, int rowStep, int colStep) {
-        int row = row() + rowStep;
-        int col = col() + colStep;
-        while (canReach(row, col)) {
-            if (ChessBoard.hasPiece(blockAt(row, col))) {
-                blocks.add(blockAt(row, col));
-                break;
-            }
-            row += rowStep;
-            col += colStep;
-        }
+        scanUntilPiece(blocks, row(), col(), rowStep, colStep);
     }
 }

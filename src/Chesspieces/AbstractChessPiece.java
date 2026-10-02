@@ -20,7 +20,6 @@ import javax.swing.*;
 public abstract class AbstractChessPiece {
     protected JButton chess_block;//棋子目前所在的格子
     protected ImageIcon chess_piece;//棋子的贴图
-    protected ImageIcon chess_block_iconImage;//棋子来到当前格之前，该格的贴图，棋子离开时用于还原
     protected MoveBehavior moveBehavior;
     protected AttackBehavior attackBehavior;
     protected ChoiceState choiceState;
@@ -28,9 +27,7 @@ public abstract class AbstractChessPiece {
     protected AbstractChessPiece(JButton chess_block, ImageIcon chess_piece) {
         this.chess_block = chess_block;
         this.chess_piece = chess_piece;
-        this.chess_block_iconImage = (ImageIcon) chess_block.getIcon();
         this.choiceState = ChoiceState.UN_CHOICE;//初始化为未选中状态
-        //构造时传入的就是ImageIcon，所以这里可以强转。
     }
 
     /**
@@ -90,14 +87,6 @@ public abstract class AbstractChessPiece {
 
     public ImageIcon getChess_piece() {
         return chess_piece;
-    }
-
-    public void setChess_block_iconImage(ImageIcon newIcon) {
-        this.chess_block_iconImage = newIcon;
-    }
-
-    public ImageIcon getChess_block_iconImage() {
-        return this.chess_block_iconImage;
     }
 
     public ChoiceState getChoiceState() {

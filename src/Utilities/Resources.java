@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,19 +16,32 @@ import java.nio.file.Path;
 /**
  * 资源读取与输出路径的统一入口。
  *
- * <p>贴图与存档模板等只读资源一律通过 classpath 读取，因此无论是从
- * IDE 的 {@code out/} 目录运行，还是从打包好的 jar 运行，都能读到；
- * 而存档、截图这类运行时产物仍然写到 jar 旁边的当前目录。</p>
+ * <p>只读资源（贴图、初始摆法）先按 classpath 找，找不到再退回到项目目录下的
+ * {@code resource/} 文件。这样两种运行方式都能工作：</p>
+ * <ul>
+ *   <li>双击 jar：资源打进包里，classpath 命中；</li>
+ *   <li>在 IDE 里直接运行：{@code resource/} 通常不在 classpath 上，回退到文件读取。</li>
+ * </ul>
+ *
+ * <p>存档、截图这类运行时产物一律写到当前目录（jar 或项目目录旁边），
+ * 父目录不存在时自动创建。</p>
  */
 public final class Resources {
+
+    /** jar 内置的初始摆法。 */
+    public static final String MANUAL_RESOURCE = "/resource/manuals/manual.txt";
+
+    /** 回退查找资源文件时使用的目录，可用 {@code -Dchess.resourceDir=...} 覆盖。 */
+    private static final String RESOURCE_DIR =
+            System.getProperty("chess.resourceDir", "resource");
 
     private Resources() {
     }
 
     /**
-     * 读取 classpath 上的图片资源。
+     * 读取图片资源。
      *
-     * @param resourcePath 以 {@code /} 开头的 classpath 路径，例如 {@code /resource/white.jpg}
+     * @param resourcePath 以 {@code /} 开头的资源路径，例如 {@code /resource/white.jpg}
      */
     public static ImageIcon readIcon(String resourcePath) {
         try (InputStream in = requireStream(resourcePath)) {
@@ -44,18 +56,18 @@ public final class Resources {
     }
 
     /**
-     * 读取 classpath 上的文本资源。
+     * 读取文本资源。
      *
-     * @param resourcePath 以 {@code /} 开头的 classpath 路径
+     * @param resourcePath 以 {@code /} 开头的资源路径
      */
     public static BufferedReader readText(String resourcePath) {
         return new BufferedReader(
                 new InputStreamReader(requireStream(resourcePath), StandardCharsets.UTF_8));
     }
 
-    /** 资源是否存在。 */
+    /** 资源是否可读（classpath 或项目目录下任一命中即可）。 */
     public static boolean exists(String resourcePath) {
-        try (InputStream in = Resources.class.getResourceAsStream(resourcePath)) {
+        try (InputStream in = open(resourcePath)) {
             return in != null;
         } catch (IOException e) {
             return false;
@@ -63,11 +75,22 @@ public final class Resources {
     }
 
     /**
+     * 打开存档读取；只有确实存在的普通文件才按文件读，否则读内置的初始摆法。
+     */
+    public static BufferedReader openManual(File file) throws IOException {
+        if (file != null && file.isFile()) {
+            return new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        }
+        return readText(MANUAL_RESOURCE);
+    }
+
+    /**
      * 打开一个用于写入的输出文件，父目录不存在时自动创建。
-     * 存档模板是打进 jar 的只读资源，因此运行时的存档与截图一律写到当前目录下。
+     * 存档与截图是运行时产物，因此一律写到当前目录下。
      */
     public static File outputFile(String path) throws IOException {
-        File file = new File(path);
+        File file = new File(path == null || path.isBlank() ? "." : path);
         Path parent = file.toPath().toAbsolutePath().getParent();
         if (parent != null) {
             Files.createDirectories(parent);
@@ -84,26 +107,42 @@ public final class Resources {
         return new File(".");
     }
 
-    /** 打开存档文件读取；只有确实存在的普通文件才按文件读，否则按 jar 内资源读。 */
-    public static BufferedReader openManual(File file) throws FileNotFoundException {
-        if (file != null && file.isFile()) {
-            return new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+    /**
+     * 先按 classpath 找资源，找不到再按项目目录下的文件找。
+     * 资源路径形如 {@code /resource/white.jpg}，因此回退时对应的磁盘文件是
+     * 当前工作目录下的 {@code resource/white.jpg}。
+     *
+     * @return 资源流；两处都没有时返回 {@code null}
+     */
+    private static InputStream open(String resourcePath) throws IOException {
+        InputStream fromClasspath = Resources.class.getResourceAsStream(resourcePath);
+        if (fromClasspath != null) {
+            return fromClasspath;
         }
-        return readText(manualResourcePath());
+        String relativePath = resourcePath.startsWith("/") ? resourcePath.substring(1) : resourcePath;
+        //能按“当前工作目录/相对路径”直接找到最好；找不到再试配置的资源目录。
+        for (String candidate : new String[]{relativePath, RESOURCE_DIR + "/" + relativePath}) {
+            File asFile = new File(candidate);
+            if (asFile.isFile()) {
+                return new FileInputStream(asFile);
+            }
+        }
+        return null;
     }
 
-    /** jar 内置的初始摆法；相对可见的项目路径为 {@code resource/manuals/manual.txt}。 */
-    public static String manualResourcePath() {
-        return "/resource/manuals/manual.txt";
-    }
-
+    /** 与 {@link #open} 相同，但找不到时抛出带排查提示的异常。 */
     private static InputStream requireStream(String resourcePath) {
-        InputStream in = Resources.class.getResourceAsStream(resourcePath);
-        if (in == null) {
-            throw new IllegalStateException("找不到资源：" + resourcePath
-                    + "（如果是从 jar 运行，请确认打包时已把 resource 目录一并放入）");
+        try {
+            InputStream in = open(resourcePath);
+            if (in == null) {
+                throw new IllegalStateException("找不到资源：" + resourcePath
+                        + "（从 jar 运行时请确认打包时已把 resource 目录放入；"
+                        + "在 IDE 里运行请确认工作目录是项目根目录，"
+                        + "或把 resource 目录标记为资源根）");
+            }
+            return in;
+        } catch (IOException e) {
+            throw new IllegalStateException("打开资源失败：" + resourcePath, e);
         }
-        return in;
     }
 }
